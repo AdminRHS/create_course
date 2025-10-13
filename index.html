@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Academy - Create Course</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+      }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --color-primary-main: #4299e1;
+            --color-primary-dark: #3182ce;
+            --color-text-primary: #2d3748;
+            --color-contrast-text: #ffffff;
+            --border-color: #e0e0e0;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Roboto', sans-serif; background-color: #f7fafc; }
+        .dark body { background-color: #1a202c; }
+        .form-input, .form-textarea {
+            width: 100%; padding: 12px 16px; border-radius: 12px; background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .dark .form-input, .dark .form-textarea {
+            background-color: #2d3748; border-color: #424242; color: #f7fafc;
+        }
+        .form-input::placeholder, .form-textarea::placeholder { color: #a0aec0; }
+        .dark .form-input::placeholder, .dark .form-textarea::placeholder { color: #718096; }
+        .form-input:focus, .form-textarea:focus, #professions-selector:focus-within {
+            outline: none; border-color: var(--color-primary-main);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+        }
+        .form-label { display: block; font-weight: 500; margin-bottom: 8px; color: var(--color-text-primary); }
+        .dark .form-label { color: #cbd5e0; }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 10px 20px; border-radius: 8px; font-weight: 600;
+            transition: all 0.2s ease; cursor: pointer;
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+        .btn-primary { background-color: var(--color-primary-main); color: var(--color-contrast-text); }
+        .btn-primary:hover { background-color: var(--color-primary-dark); }
+        .btn-outline { background-color: transparent; color: var(--color-primary-main); border: 1px solid var(--color-primary-main); }
+        .btn-outline:hover { background-color: rgba(66, 153, 225, 0.1); }
+        .file-upload-box {
+            border: 2px dashed var(--border-color); border-radius: 12px;
+            cursor: pointer; transition: border-color 0.2s ease, background-color 0.2s ease; background-color: #ffffff;
+        }
+        .dark .file-upload-box { background-color: #1f2937; border-color: #424242; }
+        .file-upload-box:hover { border-color: var(--color-primary-main); background-color: #f7fafc; }
+        .dark .file-upload-box:hover { background-color: #2d3748; }
+        .accordion-content { transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out; max-height: 0; opacity: 0; overflow: hidden; padding-top: 0; padding-bottom: 0; }
+        .accordion-content.open { max-height: 3500px; opacity: 1; padding-top: 1rem; padding-bottom: 1.5rem;}
+        .accordion-icon { transition: transform 0.3s ease; }
+        .accordion-icon.open { transform: rotate(180deg); }
+        .selected-profession-tag {
+            display: inline-flex; align-items: center; gap: 6px; background-color: #e0e0e0;
+            color: #2d3748; padding: 4px 8px; border-radius: 6px; font-size: 14px; font-weight: 500;
+        }
+        .dark .selected-profession-tag { background-color: #424242; color: #f7fafc; }
+        .remove-tag-btn { cursor: pointer; color: #718096; }
+        .dark .remove-tag-btn { color: #cbd5e0; }
+        .profession-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+        .profession-item:hover {
+            background-color: #f1f5f9;
+        }
+        .dark .profession-item:hover {
+            background-color: #334155;
+        }
+        .profession-item.selected {
+            font-weight: 500;
+        }
+        .custom-checkbox {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #cbd5e0;
+            border-radius: 4px;
+            margin-right: 12px;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+        .dark .custom-checkbox {
+             border-color: #64748b;
+        }
+        .profession-item.selected .custom-checkbox {
+            background-color: var(--color-primary-main);
+            border-color: var(--color-primary-main);
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+        }
+        .hero-preview-bg {
+             background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('video.png');
+             background-size: cover;
+             background-position: center;
+        }
+        .module-preview-card video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .module-preview-card:hover video {
+            opacity: 1;
+        }
+        .content-type-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background-color: #ffffff;
+        }
+        .content-type-card:hover {
+            border-color: var(--color-primary-main);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+        .content-type-card.active {
+             border-color: var(--color-primary-main);
+             box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.5);
+        }
+        .dark .content-type-card {
+            background-color: #2d3748;
+            border-color: #4a5568;
+        }
+        .dark .content-type-card:hover, .dark .content-type-card.active {
+            background-color: #4a5568;
+            border-color: var(--color-primary-main);
+        }
+        .slide-thumbnail {
+            cursor: grab;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .slide-thumbnail.dragging {
+            opacity: 0.5;
+            transform: scale(1.05);
+        }
+        .slide-thumbnail::before, .slide-thumbnail::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--color-primary-main);
+            border-radius: 2px;
+            transform: scaleY(0);
+            transition: transform 0.2s ease;
+            z-index: 10;
+        }
+        .slide-thumbnail::before {
+            left: -8px;
+        }
+        .slide-thumbnail::after {
+             right: -8px;
+        }
+        .slide-thumbnail.drop-indicator-before::before {
+            transform: scaleY(1);
+        }
+         .slide-thumbnail.drop-indicator-after::after {
+            transform: scaleY(1);
+        }
+    </style>
+</head>
+<body class="text-slate-800 dark:text-slate-50 transition-colors duration-300">
+
+    <div class="flex min-h-screen">
+         <aside class="w-64 bg-[#1f2937] shadow-md flex flex-col p-4 fixed h-full z-30">
+            <div class="text-2xl font-bold text-[#63b3ed] mb-8">
+                <i data-lucide="graduation-cap" class="inline-block"></i> Game Academy
+            </div>
+            <nav class="flex-grow space-y-2">
+                <a href="#" class="flex items-center p-2 text-[#cbd5e0] hover:bg-[#63b3ed]/10 hover:text-[#63b3ed] rounded-lg">
+                    <i data-lucide="home" class="w-5 h-5 mr-3"></i> Home
+                </a>
+                <a href="#" class="flex items-center p-2 bg-[#63b3ed]/10 text-[#63b3ed] font-semibold rounded-lg">
+                    <i data-lucide="book-open" class="w-5 h-5 mr-3"></i> Courses
+                </a>
+                <a href="#" class="flex items-center p-2 text-[#cbd5e0] hover:bg-[#63b3ed]/10 hover:text-[#63b3ed] rounded-lg">
+                    <i data-lucide="git-merge" class="w-5 h-5 mr-3"></i> Learning Paths
+                </a>
+                 <a href="#" class="flex items-center p-2 text-[#cbd5e0] hover:bg-[#63b3ed]/10 hover:text-[#63b3ed] rounded-lg">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5 mr-3"></i> Leaderboard
+                </a>
+                <a href="#" class="flex items-center p-2 text-[#cbd5e0] hover:bg-[#63b3ed]/10 hover:text-[#63b3ed] rounded-lg">
+                    <i data-lucide="file-check" class="w-5 h-5 mr-3"></i> My Tests
+                </a>
+                <a href="#" class="flex items-center p-2 text-[#cbd5e0] hover:bg-[#63b3ed]/10 hover:text-[#63b3ed] rounded-lg">
+                    <i data-lucide="bookmark" class="w-5 h-5 mr-3"></i> Bookmarks
+                </a>
+                <a href="#" class="flex items-center p-2 text-[#cbd5e0] hover:bg-[#63b3ed]/10 hover:text-[#63b3ed] rounded-lg">
+                    <i data-lucide="pie-chart" class="w-5 h-5 mr-3"></i> Analytics
+                </a>
+                <a href="#" class="flex items-center p-2 text-[#cbd5e0] hover:bg-[#63b3ed]/10 hover:text-[#63b3ed] rounded-lg">
+                    <i data-lucide="library" class="w-5 h-5 mr-3"></i> Lesson Library
+                </a>
+                 <a href="#" class="flex items-center p-2 text-[#cbd5e0] hover:bg-[#63b3ed]/10 hover:text-[#63b3ed] rounded-lg">
+                    <i data-lucide="git-pull-request" class="w-5 h-5 mr-3"></i> My Change Requests
+                </a>
+            </nav>
+            <div class="mt-auto">
+                <button id="theme-toggle" class="w-full flex items-center justify-center p-3 text-[#cbd5e0] border border-[#424242] rounded-lg hover:bg-[#2d3748]">
+                    <i data-lucide="moon" class="w-5 h-5 mr-2 hidden dark:inline-block"></i>
+                    <i data-lucide="sun" class="w-5 h-5 mr-2 inline-block dark:hidden"></i>
+                    <span class="dark:hidden">Dark Mode</span>
+                    <span class="hidden dark:inline-block">Light Mode</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="ml-64 flex-1 bg-[#f7fafc] dark:bg-[#1a202c] p-6 lg:p-8">
+            <div class="max-w-7xl mx-auto">
+                
+                <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 pb-4 border-b border-gray-200 dark:border-gray-700 gap-4">
+                    <h1 class="text-4xl font-bold">Create Course</h1>
+                    <button class="btn btn-primary w-full sm:w-auto">
+                        <i data-lucide="save" class="w-5 h-5"></i>
+                        Save Course
+                    </button>
+                </header>
+
+                <form class="space-y-10">
+                    <section class="grid grid-cols-10 gap-8">
+                        <div class="col-span-10 lg:col-span-7 space-y-6 bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                            <div>
+                                <label for="course-name" class="form-label">Course Title</label>
+                                <input type="text" id="course-name" class="form-input" placeholder="e.g., Dropbox Fundamentals">
+                            </div>
+                            <div>
+                                <label for="course-duration" class="form-label">Course Duration</label>
+                                <input type="text" id="course-duration" class="form-input" placeholder="e.g., 4 hours">
+                            </div>
+                            <div>
+                                <label for="course-description" class="form-label">Course Description</label>
+                                <textarea id="course-description" rows="5" class="form-textarea" placeholder="Enter the full description of the course..."></textarea>
+                            </div>
+                            <div class="relative" id="professions-container-wrapper">
+                                <label class="form-label">Professions</label>
+                                <div id="selected-professions-container" class="flex flex-wrap gap-2 items-center mb-2">
+                                </div>
+                                <div id="professions-selector" class="form-input cursor-pointer flex justify-between items-center">
+                                    <span id="professions-placeholder" class="text-gray-500 dark:text-gray-400">Select professions</span>
+                                    <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400 transition-transform"></i>
+                                </div>
+                                <div id="professions-dropdown" class="absolute bottom-full mb-2 w-full bg-white dark:bg-[#1f2937] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 hidden flex flex-col">
+                                    <div class="p-2 border-b border-gray-200 dark:border-gray-600">
+                                        <input type="text" id="profession-search-input" placeholder="Select professions" class="form-input text-sm !py-2">
+                                    </div>
+                                    <div id="professions-list" class="max-h-60 overflow-y-auto p-2">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-10 lg:col-span-3 flex flex-col gap-6">
+                           <div class="flex-grow flex flex-col bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                                <label class="form-label">Hero Section Background</label>
+                                <div class="file-upload-box flex-grow flex flex-col justify-center items-center p-4">
+                                    <i data-lucide="image-up" class="w-10 h-10 mx-auto text-gray-400"></i>
+                                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Click to upload</p>
+                                    <p class="text-xs text-gray-500">PNG, JPG (1280x485px)</p>
+                                </div>
+                           </div>
+                           <div class="flex-grow flex flex-col bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                                <label class="form-label">Main Video</label>
+                                <div class="file-upload-box flex-grow flex flex-col justify-center items-center p-4">
+                                    <i data-lucide="video-up" class="w-10 h-10 mx-auto text-gray-400"></i>
+                                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Upload video or paste link</p>
+                                    <p class="text-xs text-gray-500">MP4, MOV</p>
+                                </div>
+                           </div>
+                           <button type="button" id="preview-hero-btn" class="btn btn-primary w-full">
+                               <i data-lucide="eye" class="w-5 h-5"></i>
+                               <span>Preview Hero</span>
+                           </button>
+                        </div>
+                    </section>
+                    
+                    <div id="hero-preview-container" class="hidden"></div>
+
+                    <section>
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                            <h2 class="text-3xl font-bold">Course Modules</h2>
+                            <button type="button" class="btn btn-outline w-full sm:w-auto">
+                                <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                                Add Module
+                            </button>
+                        </div>
+                        <div id="modules-container" class="space-y-4">
+                            <div class="border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-sm">
+                                <button type="button" class="accordion-toggle w-full flex justify-between items-center p-5 text-left">
+                                    <h3 class="text-xl font-semibold">Module 1</h3>
+                                    <i data-lucide="chevron-down" class="accordion-icon w-6 h-6"></i>
+                                </button>
+                                <div class="accordion-content px-6">
+                                    <div class="grid grid-cols-10 gap-6 border-t border-gray-200 dark:border-gray-700 pt-4 pb-4">
+                                        <div class="col-span-10 lg:col-span-7 space-y-6">
+                                            <div>
+                                                <label for="module-1-name" class="form-label">Module Title</label>
+                                                <input type="text" id="module-1-name" class="form-input" placeholder="e.g., Installation and Setup">
+                                            </div>
+                                            <div>
+                                                <label for="module-1-description" class="form-label">Module Description</label>
+                                                <textarea id="module-1-description" rows="4" class="form-textarea" placeholder="Describe the goals and content of this module..."></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-span-10 lg:col-span-3 flex flex-col gap-6">
+                                            <div class="flex-grow flex flex-col">
+                                                <label class="form-label">Module Image</label>
+                                                <div class="file-upload-box flex-grow flex flex-col justify-center items-center p-4">
+                                                    <i data-lucide="image-up" class="w-10 h-10 mx-auto text-gray-400"></i>
+                                                    <p class="mt-2 text-sm">Cover Image</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow flex flex-col">
+                                                <label class="form-label">Module Video</label>
+                                                <div class="file-upload-box flex-grow flex flex-col justify-center items-center p-4">
+                                                    <i data-lucide="video-up" class="w-10 h-10 mx-auto text-gray-400"></i>
+                                                    <p class="mt-2 text-sm">Promo Video</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-span-10 mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+                                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+                                                <h4 class="text-xl font-semibold">Lessons</h4>
+                                                <div class="flex items-center gap-3">
+                                                    <button type="button" id="preview-module-btn" class="btn btn-primary btn-sm">
+                                                        <i data-lucide="eye" class="w-4 h-4"></i>
+                                                        <span>Preview Module</span>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline btn-sm">
+                                                        <i data-lucide="plus" class="w-4 h-4"></i>
+                                                        Add Lesson
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div id="module-preview-container" class="hidden my-8">
+                                                <div class="flex justify-center items-center gap-4">
+                                                    <div style="width: 195px; height: 350px;" class="bg-gray-200 dark:bg-gray-800 rounded-xl shadow-sm relative overflow-hidden">
+                                                        <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                                        <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                                            <h4 class="text-sm text-white/80">Module 1</h4>
+                                                            <p class="preview-module-title-text font-bold text-lg">Installation and Setup</p>
+                                                        </div>
+                                                    </div>
+                                                    <div style="width: 195px; height: 350px;" class="rounded-xl shadow-xl z-10 overflow-hidden relative module-preview-card">
+                                                         <img src="photo_3.png" class="absolute top-0 left-0 w-full h-full object-cover" alt="Module Preview Active">
+                                                         <video class="w-full h-full object-cover" loop muted>
+                                                            <source src="vid_3.mp4" type="video/mp4">
+                                                        </video>
+                                                        <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/70 via-black/40 to-transparent pointer-events-none"></div>
+                                                        <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                                            <h4 class="text-sm font-semibold text-white/90">Module 1</h4>
+                                                            <p id="preview-module-title" class="font-bold text-lg">Installation and Setup</p>
+                                                        </div>
+                                                    </div>
+                                                    <div style="width: 195px; height: 350px;" class="bg-gray-200 dark:bg-gray-800 rounded-xl shadow-sm relative overflow-hidden">
+                                                        <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                                        <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                                            <h4 class="text-sm text-white/80">Module 1</h4>
+                                                            <p class="preview-module-title-text font-bold text-lg">Installation and Setup</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="space-y-4">
+                                                <div class="bg-[#f7fafc] dark:bg-gray-900/50 p-5 rounded-lg border border-gray-200 dark:border-gray-600">
+                                                    <div class="grid grid-cols-10 gap-6">
+                                                        <div class="col-span-10 lg:col-span-7 space-y-4">
+                                                            <div>
+                                                                <label for="lesson-1-1-name" class="form-label text-sm">Lesson Title</label>
+                                                                <input type="text" id="lesson-1-1-name" class="form-input text-sm" placeholder="Title of the first lesson">
+                                                            </div>
+                                                             <div>
+                                                                <label for="lesson-1-1-time" class="form-label text-sm">Time to complete</label>
+                                                                <input type="text" id="lesson-1-1-time" class="form-input text-sm" placeholder="25 min">
+                                                            </div>
+                                                            <div>
+                                                                <label for="lesson-1-1-desc" class="form-label text-sm">Lesson Description</label>
+                                                                <textarea id="lesson-1-1-desc" rows="5" class="form-textarea text-sm" placeholder="Short description of the lesson's topic..."></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-span-10 lg:col-span-3 flex flex-col">
+                                                            <label class="form-label text-sm">Lesson Image</label>
+                                                            <div class="file-upload-box flex-grow flex flex-col justify-center items-center p-4">
+                                                                <i data-lucide="image-up" class="w-10 h-10 mx-auto text-gray-400"></i>
+                                                                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Click to upload</p>
+                                                                <p class="text-xs text-gray-500">PNG, JPG</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-span-10 mt-4">
+                                                            <div id="content-type-wrapper">
+                                                                <div id="content-type-selector" class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                                                                    <div class="flex justify-between items-center mb-4">
+                                                                        <h3 class="font-semibold text-base">Select Content Type</h3>
+                                                                    </div>
+                                                                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                                                        <div class="content-type-card" data-type="markdown"><div class="flex items-start gap-3"><i data-lucide="file-text" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Markdown Text</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Text content with Markdown formatting.</p></div></div></div>
+                                                                        <div class="content-type-card" data-type="presentation"><div class="flex items-start gap-3"><i data-lucide="presentation" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Presentation</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Presentation-style content with slides.</p></div></div></div>
+                                                                        <div class="content-type-card" data-type="html"><div class="flex items-start gap-3"><i data-lucide="code-2" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Full HTML Content</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Complete HTML markup with custom styles.</p></div></div></div>
+                                                                        <div class="content-type-card" data-type="html-block"><div class="flex items-start gap-3"><i data-lucide="layout-template" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">HTML Block</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Modular HTML content block for layouts.</p></div></div></div>
+                                                                        <div class="content-type-card" data-type="video"><div class="flex items-start gap-3"><i data-lucide="video" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Video Content</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Embedded video player.</p></div></div></div>
+                                                                        <div class="content-type-card" data-type="flipping"><div class="flex items-start gap-3"><i data-lucide="layers" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Flipping Cards</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive cards that flip when clicked.</p></div></div></div>
+                                                                        <div class="content-type-card" data-type="labyrinth"><div class="flex items-start gap-3"><i data-lucide="network" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Labyrinth</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive decision tree navigation.</p></div></div></div>
+                                                                        <div class="content-type-card" data-type="memory"><div class="flex items-start gap-3"><i data-lucide="puzzle" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Memory Game</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Matching pairs memory game.</p></div></div></div>
+                                                                        <div class="content-type-card" data-type="tag-cloud"><div class="flex items-start gap-3"><i data-lucide="cloud" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Tag Cloud</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive word cloud with definitions.</p></div></div></div>
+                                                                        <div class="content-type-card" data-type="role-play"><div class="flex items-start gap-3"><i data-lucide="message-square" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Role Play Game</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive dialogue scenarios.</p></div></div></div>
+                                                                    </div>
+                                                                </div>
+                                                                <div id="content-editor-container" class="hidden mt-4">
+                                                                    <div id="presentation-editor" class="hidden">
+                                                                        <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                                                                            <label for="slide-upload-input" class="w-full file-upload-box !p-4 text-sm mb-4 flex flex-col justify-center items-center">
+                                                                                <i data-lucide="upload-cloud" class="w-8 h-8 text-gray-400 mx-auto"></i>
+                                                                                <span class="mt-2 block">Upload Slides (Images)</span>
+                                                                                <input type="file" id="slide-upload-input" class="hidden" multiple accept="image/*">
+                                                                            </label>
+                                                                            <p class="text-xs text-center text-gray-500 mb-4">Drag and drop slides to reorder them.</p>
+                                                                            <div id="slide-sorter" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[100px]">
+                                                                                </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div id="markdown-editor" class="hidden">
+                                                                        <textarea rows="8" class="form-textarea" placeholder=""></textarea>
+                                                                    </div>
+                                                                     <div class="mt-4 text-right">
+                                                                        <button type="button" class="preview-content-btn btn btn-primary btn-sm">Preview Content</button>
+                                                                    </div>
+                                                                </div>
+                                                                <div id="content-preview-container" class="hidden mt-4">
+                                                                    </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <div class="flex justify-end mt-10">
+                        <button type="submit" class="btn btn-primary">
+                            <i data-lucide="save" class="w-5 h-5"></i>
+                            Save Course
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        const themeToggle = document.getElementById('theme-toggle');
+        const htmlEl = document.documentElement;
+        if (localStorage.getItem('theme') === 'dark') { htmlEl.classList.add('dark'); }
+        themeToggle.addEventListener('click', () => {
+            htmlEl.classList.toggle('dark');
+            localStorage.setItem('theme', htmlEl.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            (function setupAccordions() {
+                const accordions = document.querySelectorAll('.accordion-toggle');
+                const firstAccordion = accordions[0];
+                if (firstAccordion) {
+                    firstAccordion.nextElementSibling.classList.add('open');
+                    firstAccordion.querySelector('.accordion-icon').classList.add('open');
+                }
+                accordions.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const content = button.nextElementSibling;
+                        const icon = button.querySelector('.accordion-icon');
+                        content.classList.toggle('open');
+                        icon.classList.toggle('open');
+                    });
+                });
+            })();
+            
+            (function setupProfessionsDropdown() {
+                const professionsData = { 'designers': ['3d designer', 'Graphic designer', 'Illustrator', 'Interior designer', 'Motion designer', 'UI UX designer', 'Web designer', 'Wordpress designer', 'Vizualizer'], 'developers': ['Back end developer', 'Full stack developer', 'Front end developer', 'Mobile developer', 'QA', 'System administrator', 'Prompt engineer'], 'managers': ['Account manager', 'Content manager', 'Event manager', 'Financial manager', 'HR manager', 'Investment manager', 'Influencer manager', 'Product manager', 'Project manager', 'PR manager', 'Sales manager', 'SEO manager', 'Social media manager', 'beginner'], 'marketers': ['Affiliate manager', 'Copywriter', 'Email marketer', 'Lead generator', 'Linkbuilder', 'Media buyer', 'PPC specialist', 'Targetologist'], 'videographers': ['Mobile video editor', 'Video editor'], 'other': ['Analyst', 'Chat operator', 'Personal assistant', 'Proofreader', 'Recruiter', 'Translator', 'Tourism manager'] };
+                const allProfessions = [...new Set(Object.values(professionsData).flat())].sort((a, b) => a.localeCompare(b));
+                let selectedProfessions = [];
+                const professionsSelector = document.getElementById('professions-selector');
+                const professionsDropdown = document.getElementById('professions-dropdown');
+                const professionsList = document.getElementById('professions-list');
+                const searchInput = document.getElementById('profession-search-input');
+                const professionsContainerWrapper = document.getElementById('professions-container-wrapper');
+                const placeholder = document.getElementById('professions-placeholder');
+                
+                const populateProfessionsList = () => { professionsList.innerHTML = ''; allProfessions.forEach(prof => { const item = document.createElement('div'); item.className = 'profession-item capitalize'; item.dataset.profession = prof; item.innerHTML = `<div class="custom-checkbox"></div><span>${prof}</span>`; professionsList.appendChild(item); }); };
+                const updateSelectedProfessionsUI = () => { const container = document.getElementById('selected-professions-container'); container.innerHTML = ''; if (selectedProfessions.length > 0) { placeholder.classList.add('hidden'); selectedProfessions.forEach(prof => { const tagEl = document.createElement('span'); tagEl.className = 'selected-profession-tag capitalize'; tagEl.innerHTML = `<span>${prof}</span> <i data-lucide="x" class="remove-tag-btn w-4 h-4" data-profession-to-remove="${prof}"></i>`; container.appendChild(tagEl); }); lucide.createIcons(); } else { placeholder.classList.remove('hidden'); } };
+                const updateListItemStyles = () => { professionsList.querySelectorAll('.profession-item').forEach(item => { if (selectedProfessions.includes(item.dataset.profession)) { item.classList.add('selected'); } else { item.classList.remove('selected'); } }); };
+
+                professionsSelector.addEventListener('click', (e) => { e.stopPropagation(); const icon = professionsSelector.querySelector('i'); professionsDropdown.classList.toggle('hidden'); icon.classList.toggle('-rotate-180'); if (!professionsDropdown.classList.contains('hidden')) { searchInput.focus(); } });
+                professionsList.addEventListener('click', (e) => { const item = e.target.closest('.profession-item'); if (item) { const profession = item.dataset.profession; if (selectedProfessions.includes(profession)) { selectedProfessions = selectedProfessions.filter(p => p !== profession); } else { selectedProfessions.push(profession); } updateSelectedProfessionsUI(); updateListItemStyles(); } });
+                document.getElementById('selected-professions-container').addEventListener('click', (e) => { const removeBtn = e.target.closest('.remove-tag-btn'); if (removeBtn) { e.stopPropagation(); const professionToRemove = removeBtn.dataset.professionToRemove; selectedProfessions = selectedProfessions.filter(p => p !== professionToRemove); updateSelectedProfessionsUI(); updateListItemStyles(); } });
+                searchInput.addEventListener('input', () => { const filter = searchInput.value.toLowerCase(); professionsList.querySelectorAll('.profession-item').forEach(item => { if (item.textContent.toLowerCase().includes(filter)) { item.style.display = 'flex'; } else { item.style.display = 'none'; } }); });
+                window.addEventListener('click', (e) => { if (!professionsContainerWrapper.contains(e.target)) { professionsDropdown.classList.add('hidden'); professionsSelector.querySelector('i').classList.remove('-rotate-180'); } });
+                populateProfessionsList();
+            })();
+
+            (function setupHeroPreview() {
+                const previewBtn = document.getElementById('preview-hero-btn');
+                const previewContainer = document.getElementById('hero-preview-container');
+                previewBtn.addEventListener('click', () => {
+                    const isHidden = previewContainer.classList.contains('hidden');
+                    if (isHidden) {
+                        const title = document.getElementById('course-name').value || "Dropbox Fundamentals";
+                        const description = document.getElementById('course-description').value || "A comprehensive guide to mastering Dropbox fundamentals—learn to securely back up files, access them from any device, sync effortlessly, and share with confidence. Perfect for beginners looking to organize their digital life.";
+                        const selectedProfessionsNodeList = document.querySelectorAll('.selected-profession-tag span');
+                        const selectedProfessions = Array.from(selectedProfessionsNodeList).map(span => span.textContent);
+                        let professionsHtml = (selectedProfessions.length > 0 ? selectedProfessions : ['3d Designer', 'Account Manager', 'Analyst']).slice(0, 4).map(p => `<span class="bg-white/20 text-white/80 text-xs px-2 py-1 rounded-md capitalize">${p}</span>`).join('');
+                        previewContainer.innerHTML = `
+                            <header class="hero-preview-bg rounded-xl text-white p-8 md:p-12 shadow-lg relative">
+                                <div class="relative z-10">
+                                    <div class="max-w-3xl"><div class="flex items-center gap-2 mb-4"><span class="inline-flex items-center bg-[#F59E0B] text-white text-sm font-semibold px-3 py-1 rounded-lg"><i data-lucide="file-edit" class="w-4 h-4 mr-2"></i>DRAFT</span><span class="inline-block bg-[#48BB78] text-white text-xs font-semibold px-3 py-1 rounded-lg">BEGINNER LEVEL</span></div><h1 class="text-4xl md:text-5xl font-bold mb-4">${title}</h1><p class="text-white/80 leading-relaxed mb-4">${description}</p><div class="mt-4"><div class="flex items-center gap-2 text-sm"><span class="font-semibold">For whom:</span><div class="flex items-center gap-2 flex-wrap">${professionsHtml}</div>${selectedProfessions.length > 4 ? '<span class="font-semibold whitespace-nowrap">More...</span>' : ''}</div></div><div class="mt-6"><a href="#" onclick="event.preventDefault()" class="inline-block bg-[#63b3ed] text-[#1a202c] font-bold py-2 px-16 rounded-lg hover:bg-[#90cdf4] transition-colors text-lg">Continue learning</a></div></div>
+                                    <div class="relative mt-8 pt-6 border-t border-white/20 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm"><div class="flex items-center"><i data-lucide="clock" class="w-4 h-4 mr-2"></i> 4 hours</div><div class="flex items-center"><i data-lucide="book-marked" class="w-4 h-4 mr-2"></i> 9 Lessons</div><div class="flex items-center"><i data-lucide="video" class="w-4 h-4 mr-2"></i> 12 Videos</div><div class="flex items-center"><i data-lucide="presentation" class="w-4 h-4 mr-2"></i> 8 Presentations</div><div class="flex items-center"><i data-lucide="file-check" class="w-4 h-4 mr-2"></i> 5 Tests</div><div class="flex items-center"><i data-lucide="star" class="w-4 h-4 mr-2 text-yellow-400 fill-current"></i> 4.9</div><div class="flex-grow"></div><div class="flex items-center"><i data-lucide="message-square" class="w-4 h-4 mr-2"></i> Reviews</div><div class="flex items-center"><i data-lucide="users" class="w-4 h-4 mr-2"></i> 892 Students</div><div class="flex items-center"><i data-lucide="award" class="w-4 h-4 mr-2"></i> Authors</div><button class="p-2 rounded-lg hover:bg-white/20 transition-colors"><i data-lucide="bookmark" class="w-5 h-5"></i></button></div>
+                                </div>
+                            </header>`;
+                        previewContainer.classList.remove('hidden');
+                        previewBtn.querySelector('span').textContent = 'Close Preview';
+                        lucide.createIcons();
+                    } else {
+                        previewContainer.classList.add('hidden');
+                        previewContainer.innerHTML = '';
+                        previewBtn.querySelector('span').textContent = 'Preview Hero';
+                    }
+                });
+            })();
+
+            (function setupModulePreview() {
+                const previewModuleBtn = document.getElementById('preview-module-btn');
+                const modulePreviewContainer = document.getElementById('module-preview-container');
+                if (previewModuleBtn && modulePreviewContainer) {
+                    previewModuleBtn.addEventListener('click', () => {
+                        const isHidden = modulePreviewContainer.classList.contains('hidden');
+                        const btnSpan = previewModuleBtn.querySelector('span');
+                        if (isHidden) {
+                            const moduleTitleInput = document.getElementById('module-1-name');
+                            const title = moduleTitleInput.value.trim() || "Installation and Setup";
+                            modulePreviewContainer.querySelectorAll('.preview-module-title-text').forEach(el => { el.textContent = title; });
+                            document.getElementById('preview-module-title').textContent = title;
+                            modulePreviewContainer.classList.remove('hidden');
+                            btnSpan.textContent = 'Close Preview';
+                        } else {
+                            modulePreviewContainer.classList.add('hidden');
+                            btnSpan.textContent = 'Preview Module';
+                        }
+                    });
+                    const activeCard = modulePreviewContainer.querySelector('.module-preview-card');
+                    const video = activeCard.querySelector('video');
+                    activeCard.addEventListener('mouseenter', () => video.play());
+                    activeCard.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
+                }
+            })();
+
+            // --- CONTENT TYPE & EDITOR LOGIC ---
+            const contentTypeWrapper = document.getElementById('content-type-wrapper');
+            const contentTypeSelector = document.getElementById('content-type-selector');
+            const contentEditorContainer = document.getElementById('content-editor-container');
+            const contentPreviewContainer = document.getElementById('content-preview-container');
+
+            contentTypeSelector.querySelectorAll('.content-type-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    contentTypeSelector.querySelectorAll('.content-type-card').forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                    const type = card.dataset.type;
+                    contentEditorContainer.classList.remove('hidden');
+                    contentEditorContainer.querySelectorAll('[id$="-editor"]').forEach(editor => editor.classList.add('hidden'));
+                    const selectedEditor = document.getElementById(`${type}-editor`) || document.getElementById('markdown-editor');
+                    if (selectedEditor) {
+                        selectedEditor.classList.remove('hidden');
+                    }
+                    contentPreviewContainer.classList.add('hidden');
+                    contentPreviewContainer.innerHTML = '';
+                });
+            });
+
+            // --- PRESENTATION EDITOR LOGIC ---
+            const slideUploadInput = document.getElementById('slide-upload-input');
+            const slideSorter = document.getElementById('slide-sorter');
+            let slides = [];
+            let draggedItem = null;
+
+            slideUploadInput.addEventListener('change', (e) => {
+                Array.from(e.target.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const slideData = { id: Date.now() + Math.random(), src: event.target.result };
+                        slides.push(slideData);
+                        renderSlideSorter();
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+
+            function renderSlideSorter() {
+                slideSorter.innerHTML = '';
+                slides.forEach((slide, index) => {
+                    const slideEl = document.createElement('div');
+                    slideEl.className = 'slide-thumbnail relative aspect-[16/9] bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden border dark:border-gray-600';
+                    slideEl.draggable = true;
+                    slideEl.dataset.id = slide.id;
+                    slideEl.innerHTML = `
+                        <img src="${slide.src}" class="w-full h-full object-cover">
+                        <div class="absolute top-1 right-1 bg-black/50 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">${index + 1}</div>
+                    `;
+                    slideSorter.appendChild(slideEl);
+                });
+            }
+
+            slideSorter.addEventListener('dragstart', (e) => {
+                draggedItem = e.target.closest('.slide-thumbnail');
+                if(!draggedItem) return;
+                setTimeout(() => {
+                    draggedItem.classList.add('dragging');
+                }, 0);
+            });
+
+            slideSorter.addEventListener('dragend', (e) => {
+                if(!draggedItem) return;
+                draggedItem.classList.remove('dragging');
+                draggedItem = null;
+                slideSorter.querySelectorAll('.slide-thumbnail').forEach(el => {
+                    el.classList.remove('drop-indicator-before', 'drop-indicator-after');
+                });
+            });
+
+            slideSorter.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (!draggedItem) return;
+
+                slideSorter.querySelectorAll('.slide-thumbnail').forEach(el => el.classList.remove('drop-indicator-before', 'drop-indicator-after'));
+                
+                const afterElement = getDragAfterElement(slideSorter, e.clientX);
+                if (afterElement) {
+                    const box = afterElement.getBoundingClientRect();
+                    const offset = e.clientX - box.left - box.width / 2;
+                    if(offset < 0) {
+                        afterElement.classList.add('drop-indicator-before');
+                    } else {
+                        afterElement.classList.add('drop-indicator-after');
+                    }
+                } else if (slideSorter.children.length > 0 && draggedItem !== slideSorter.lastElementChild) {
+                    slideSorter.lastElementChild.classList.add('drop-indicator-after');
+                }
+            });
+            
+            slideSorter.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (!draggedItem) return;
+
+                const indicatorBefore = slideSorter.querySelector('.drop-indicator-before');
+                const indicatorAfter = slideSorter.querySelector('.drop-indicator-after');
+
+                if (indicatorBefore) {
+                    slideSorter.insertBefore(draggedItem, indicatorBefore);
+                } else if (indicatorAfter) {
+                    slideSorter.insertBefore(draggedItem, indicatorAfter.nextSibling);
+                } else if (slideSorter.children.length === 0 || draggedItem !== slideSorter.lastElementChild) {
+                    slideSorter.appendChild(draggedItem);
+                }
+                
+                const newOrder = Array.from(slideSorter.querySelectorAll('.slide-thumbnail')).map(el => el.dataset.id);
+                slides.sort((a, b) => newOrder.indexOf(String(a.id)) - newOrder.indexOf(String(b.id)));
+                
+                renderSlideSorter(); 
+            });
+
+            function getDragAfterElement(container, x) {
+                const draggableElements = [...container.querySelectorAll('.slide-thumbnail:not(.dragging)')];
+                return draggableElements.reduce((closest, child) => {
+                    const box = child.getBoundingClientRect();
+                    const offset = x - box.left - box.width / 2;
+                    if (offset < 0 && offset > closest.offset) {
+                        return { offset: offset, element: child };
+                    } else {
+                        return closest;
+                    }
+                }, { offset: Number.NEGATIVE_INFINITY }).element;
+            }
+            
+            document.querySelectorAll('.preview-content-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const activeEditor = contentEditorContainer.querySelector('[id$="-editor"]:not(.hidden)');
+                    if (activeEditor && activeEditor.id === 'presentation-editor') {
+                        previewPresentation();
+                    } else {
+                        previewMarkdown();
+                    }
+                });
+            });
+
+            function previewPresentation() {
+                if(slides.length === 0) {
+                    alert('Please upload some slides first.');
+                    return;
+                }
+                contentPreviewContainer.classList.remove('hidden');
+                let currentSlideIndex = 0;
+                function showSlide(index) {
+                     contentPreviewContainer.innerHTML = `
+                        <div class="relative bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                             <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-semibold">Presentation Preview</h4>
+                                <span class="text-sm font-semibold">${index + 1} / ${slides.length}</span>
+                             </div>
+                             <div class="relative aspect-video bg-gray-200 dark:bg-black rounded-lg flex items-center justify-center">
+                                <img src="${slides[index].src}" class="max-w-full max-h-full object-contain">
+                                ${slides.length > 1 ? `
+                                <button class="preview-prev absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 text-white rounded-full hover:bg-black/80"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                                <button class="preview-next absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 text-white rounded-full hover:bg-black/80"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                                ` : ''}
+                             </div>
+                        </div>
+                    `;
+                    lucide.createIcons();
+                }
+                showSlide(currentSlideIndex);
+                contentPreviewContainer.onclick = (e) => {
+                    if (e.target.closest('.preview-next')) {
+                        currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+                        showSlide(currentSlideIndex);
+                    }
+                    if (e.target.closest('.preview-prev')) {
+                        currentSlideIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
+                        showSlide(currentSlideIndex);
+                    }
+                };
+            }
+
+            function previewMarkdown() {
+                contentPreviewContainer.classList.remove('hidden');
+                const text = document.querySelector('#markdown-editor textarea').value;
+                contentPreviewContainer.innerHTML = `
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <h4 class="font-semibold mb-2">Text Preview</h4>
+                        <div class="prose dark:prose-invert max-w-none">${text || 'No content yet.'}</div>
+                    </div>`;
+            }
+        });
+    </script>
+</body>
+</html>
