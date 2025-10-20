@@ -23,17 +23,17 @@
         html { scroll-behavior: smooth; }
         body { font-family: 'Roboto', sans-serif; background-color: #f7fafc; }
         .dark body { background-color: #1a202c; }
-        .form-input, .form-textarea {
+        .form-input, .form-textarea, .form-select {
             width: 100%; padding: 12px 16px; border-radius: 12px; background-color: #ffffff;
             border: 1px solid var(--border-color);
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
-        .dark .form-input, .dark .form-textarea {
+        .dark .form-input, .dark .form-textarea, .dark .form-select {
             background-color: #2d3748; border-color: #424242; color: #f7fafc;
         }
         .form-input::placeholder, .form-textarea::placeholder { color: #a0aec0; }
         .dark .form-input::placeholder, .dark .form-textarea::placeholder { color: #718096; }
-        .form-input:focus, .form-textarea:focus, #professions-selector:focus-within {
+        .form-input:focus, .form-textarea:focus, .form-select:focus, #professions-selector:focus-within {
             outline: none; border-color: var(--color-primary-main);
             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
         }
@@ -63,11 +63,11 @@
         .accordion-content.open { max-height: 3500px; opacity: 1; padding-top: 1rem; padding-bottom: 1.5rem;}
         .accordion-icon { transition: transform 0.3s ease; }
         .accordion-icon.open { transform: rotate(180deg); }
-        .selected-profession-tag {
+        .skill-tag, .selected-profession-tag {
             display: inline-flex; align-items: center; gap: 6px; background-color: #e0e0e0;
             color: #2d3748; padding: 4px 8px; border-radius: 6px; font-size: 14px; font-weight: 500;
         }
-        .dark .selected-profession-tag { background-color: #424242; color: #f7fafc; }
+        .dark .skill-tag, .dark .selected-profession-tag { background-color: #424242; color: #f7fafc; }
         .remove-tag-btn { cursor: pointer; color: #718096; }
         .dark .remove-tag-btn { color: #cbd5e0; }
         .profession-item {
@@ -85,6 +85,7 @@
         }
         .profession-item.selected {
             font-weight: 500;
+            color: var(--color-primary-main);
         }
         .custom-checkbox {
             width: 16px;
@@ -230,7 +231,30 @@
         <main class="ml-64 flex-1 bg-[#f7fafc] dark:bg-[#1a202c] p-6 lg:p-8">
             <div class="max-w-7xl mx-auto">
                 
-                <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 pb-4 border-b border-gray-200 dark:border-gray-700 gap-4">
+                 <div class="flex justify-between items-center mb-6">
+                    <nav aria-label="Breadcrumb">
+                        <ol class="flex items-center gap-2 text-sm">
+                            <li><a href="#" class="text-gray-600 dark:text-gray-400 hover:underline">Courses</a></li>
+                            <li><span class="text-gray-500">/</span></li>
+                            <li><span class="font-semibold text-gray-900 dark:text-gray-200">Create Course</span></li>
+                        </ol>
+                    </nav>
+                    <div id="notifications-btn-container" class="relative">
+                        <button id="notifications-btn" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200/50 dark:bg-gray-700/50 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                            <i data-lucide="bell" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
+                        </button>
+                        <div id="notifications-panel" class="absolute right-0 mt-2 w-[25rem] bg-white dark:bg-[#1f2937] border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hidden z-30">
+                            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                                <h3 class="font-semibold text-gray-800 dark:text-gray-200">Notifications</h3>
+                            </div>
+                            <div class="py-2 max-h-96 overflow-y-auto">
+                               <div class="p-4 text-center text-sm text-gray-500">No new notifications</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                     <h1 class="text-4xl font-bold">Create Course</h1>
                     <button class="btn btn-primary w-full sm:w-auto">
                         <i data-lucide="save" class="w-5 h-5"></i>
@@ -253,6 +277,13 @@
                                 <label for="course-description" class="form-label">Course Description</label>
                                 <textarea id="course-description" rows="5" class="form-textarea" placeholder="Enter the full description of the course..."></textarea>
                             </div>
+                            <div>
+                                <label for="skills-input" class="form-label">Skills</label>
+                                <div id="selected-skills-container" class="flex flex-wrap gap-2 mb-2">
+                                </div>
+                                <input type="text" id="skills-input" class="form-input" placeholder="Type a skill and press Enter">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">These skills will be automatically added to the employee's resume upon completion.</p>
+                            </div>
                             <div class="relative" id="professions-container-wrapper">
                                 <label class="form-label">Professions</label>
                                 <div id="selected-professions-container" class="flex flex-wrap gap-2 items-center mb-2">
@@ -270,22 +301,45 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-span-10 lg:col-span-3 flex flex-col gap-6">
-                           <div class="flex-grow flex flex-col bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                        <div class="col-span-10 lg:col-span-3 grid grid-cols-1 gap-6 content-start">
+                           <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                                <div id="status-container-wrapper" class="relative">
+                                    <label class="form-label">Status</label>
+                                    <div id="status-selector" class="form-input cursor-pointer flex justify-between items-center">
+                                        <span id="status-display" class="capitalize">Draft</span>
+                                        <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400 transition-transform"></i>
+                                    </div>
+                                    <div id="status-dropdown" class="absolute mt-2 w-full bg-white dark:bg-[#1f2937] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 hidden">
+                                        <div class="p-2">
+                                            <div class="status-item profession-item" data-status="draft">
+                                                <span>Draft</span>
+                                            </div>
+                                            <div class="status-item profession-item" data-status="published">
+                                                <span>Published</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                           </div>
+                           <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                                 <label class="form-label">Hero Section Background</label>
-                                <div class="file-upload-box flex-grow flex flex-col justify-center items-center p-4">
+                                <div class="file-upload-box flex flex-col justify-center items-center p-6">
                                     <i data-lucide="image-up" class="w-10 h-10 mx-auto text-gray-400"></i>
                                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Click to upload</p>
                                     <p class="text-xs text-gray-500">PNG, JPG (1280x485px)</p>
                                 </div>
-                           </div>
-                           <div class="flex-grow flex flex-col bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-                                <label class="form-label">Main Video</label>
-                                <div class="file-upload-box flex-grow flex flex-col justify-center items-center p-4">
-                                    <i data-lucide="video-up" class="w-10 h-10 mx-auto text-gray-400"></i>
-                                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Upload video or paste link</p>
-                                    <p class="text-xs text-gray-500">MP4, MOV</p>
+                                <div class="flex items-center my-4">
+                                    <hr class="flex-grow border-gray-200 dark:border-gray-600">
+                                    <span class="mx-2 text-xs text-gray-400 dark:text-gray-500">OR</span>
+                                    <hr class="flex-grow border-gray-200 dark:border-gray-600">
                                 </div>
+                                <div>
+                                    <input type="text" class="form-input text-sm" placeholder="Paste image URL...">
+                                </div>
+                           </div>
+                           <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                                <label for="main-video-url" class="form-label">Main Video URL</label>
+                                <input id="main-video-url" type="text" class="form-input" placeholder="Paste video URL...">
                            </div>
                            <button type="button" id="preview-hero-btn" class="btn btn-primary w-full">
                                <i data-lucide="eye" class="w-5 h-5"></i>
@@ -311,7 +365,7 @@
                                     <i data-lucide="chevron-down" class="accordion-icon w-6 h-6"></i>
                                 </button>
                                 <div class="accordion-content px-6">
-                                    <div class="grid grid-cols-10 gap-6 border-t border-gray-200 dark:border-gray-700 pt-4 pb-4">
+                                    <div class="grid grid-cols-10 gap-6 border-t border-gray-200 dark:border-gray-700 pt-6 pb-6">
                                         <div class="col-span-10 lg:col-span-7 space-y-6">
                                             <div>
                                                 <label for="module-1-name" class="form-label">Module Title</label>
@@ -322,134 +376,143 @@
                                                 <textarea id="module-1-description" rows="4" class="form-textarea" placeholder="Describe the goals and content of this module..."></textarea>
                                             </div>
                                         </div>
-                                        <div class="col-span-10 lg:col-span-3 flex flex-col gap-6">
-                                            <div class="flex-grow flex flex-col">
+                                        <div class="col-span-10 lg:col-span-3 space-y-6">
+                                            <div>
                                                 <label class="form-label">Module Image</label>
                                                 <div class="file-upload-box flex-grow flex flex-col justify-center items-center p-4">
                                                     <i data-lucide="image-up" class="w-10 h-10 mx-auto text-gray-400"></i>
                                                     <p class="mt-2 text-sm">Cover Image</p>
                                                 </div>
+                                                <div class="flex items-center my-2">
+                                                    <hr class="flex-grow border-gray-200 dark:border-gray-600">
+                                                    <span class="mx-2 text-xs text-gray-400 dark:text-gray-500">OR</span>
+                                                    <hr class="flex-grow border-gray-200 dark:border-gray-600">
+                                                </div>
+                                                <input type="text" class="form-input text-sm" placeholder="Paste image URL...">
                                             </div>
-                                            <div class="flex-grow flex flex-col">
-                                                <label class="form-label">Module Video</label>
-                                                <div class="file-upload-box flex-grow flex flex-col justify-center items-center p-4">
-                                                    <i data-lucide="video-up" class="w-10 h-10 mx-auto text-gray-400"></i>
-                                                    <p class="mt-2 text-sm">Promo Video</p>
+                                            <div>
+                                                <label class="form-label">Module Video URL</label>
+                                                <input type="text" class="form-input text-sm" placeholder="Paste promo video URL...">
+                                            </div>
+                                        </div>
+                                        <div class="col-span-10 flex justify-end items-center gap-3">
+                                            <button type="button" id="preview-module-btn" class="btn btn-primary btn-sm">
+                                                <i data-lucide="eye" class="w-4 h-4"></i>
+                                                <span>Preview Module</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                                        <div id="module-preview-container" class="hidden my-8">
+                                            <div class="flex justify-center items-center gap-4">
+                                                <div style="width: 195px; height: 350px;" class="bg-gray-200 dark:bg-gray-800 rounded-xl shadow-sm relative overflow-hidden">
+                                                    <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                                    <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                                        <h4 class="text-sm text-white/80">Module 1</h4>
+                                                        <p class="preview-module-title-text font-bold text-lg">Installation and Setup</p>
+                                                    </div>
+                                                </div>
+                                                <div style="width: 195px; height: 350px;" class="rounded-xl shadow-xl z-10 overflow-hidden relative module-preview-card">
+                                                     <img src="photo_3.png" class="absolute top-0 left-0 w-full h-full object-cover" alt="Module Preview Active">
+                                                     <video class="w-full h-full object-cover" loop muted>
+                                                        <source src="vid_3.mp4" type="video/mp4">
+                                                    </video>
+                                                    <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/70 via-black/40 to-transparent pointer-events-none"></div>
+                                                    <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                                        <h4 class="text-sm font-semibold text-white/90">Module 1</h4>
+                                                        <p id="preview-module-title" class="font-bold text-lg">Installation and Setup</p>
+                                                    </div>
+                                                </div>
+                                                <div style="width: 195px; height: 350px;" class="bg-gray-200 dark:bg-gray-800 rounded-xl shadow-sm relative overflow-hidden">
+                                                    <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                                    <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                                        <h4 class="text-sm text-white/80">Module 1</h4>
+                                                        <p class="preview-module-title-text font-bold text-lg">Installation and Setup</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-span-10 mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
-                                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-                                                <h4 class="text-xl font-semibold">Lessons</h4>
-                                                <div class="flex items-center gap-3">
-                                                    <button type="button" id="preview-module-btn" class="btn btn-primary btn-sm">
-                                                        <i data-lucide="eye" class="w-4 h-4"></i>
-                                                        <span>Preview Module</span>
-                                                    </button>
-                                                    <button type="button" class="btn btn-outline btn-sm">
-                                                        <i data-lucide="plus" class="w-4 h-4"></i>
-                                                        Add Lesson
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            
-                                            <div id="module-preview-container" class="hidden my-8">
-                                                <div class="flex justify-center items-center gap-4">
-                                                    <div style="width: 195px; height: 350px;" class="bg-gray-200 dark:bg-gray-800 rounded-xl shadow-sm relative overflow-hidden">
-                                                        <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></div>
-                                                        <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
-                                                            <h4 class="text-sm text-white/80">Module 1</h4>
-                                                            <p class="preview-module-title-text font-bold text-lg">Installation and Setup</p>
-                                                        </div>
-                                                    </div>
-                                                    <div style="width: 195px; height: 350px;" class="rounded-xl shadow-xl z-10 overflow-hidden relative module-preview-card">
-                                                         <img src="photo_3.png" class="absolute top-0 left-0 w-full h-full object-cover" alt="Module Preview Active">
-                                                         <video class="w-full h-full object-cover" loop muted>
-                                                            <source src="vid_3.mp4" type="video/mp4">
-                                                        </video>
-                                                        <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/70 via-black/40 to-transparent pointer-events-none"></div>
-                                                        <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
-                                                            <h4 class="text-sm font-semibold text-white/90">Module 1</h4>
-                                                            <p id="preview-module-title" class="font-bold text-lg">Installation and Setup</p>
-                                                        </div>
-                                                    </div>
-                                                    <div style="width: 195px; height: 350px;" class="bg-gray-200 dark:bg-gray-800 rounded-xl shadow-sm relative overflow-hidden">
-                                                        <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></div>
-                                                        <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
-                                                            <h4 class="text-sm text-white/80">Module 1</h4>
-                                                            <p class="preview-module-title-text font-bold text-lg">Installation and Setup</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
 
-                                            <div class="space-y-4">
-                                                <div class="bg-[#f7fafc] dark:bg-gray-900/50 p-5 rounded-lg border border-gray-200 dark:border-gray-600">
-                                                    <div class="grid grid-cols-10 gap-6">
-                                                        <div class="col-span-10 lg:col-span-7 space-y-4">
-                                                            <div>
-                                                                <label for="lesson-1-1-name" class="form-label text-sm">Lesson Title</label>
-                                                                <input type="text" id="lesson-1-1-name" class="form-input text-sm" placeholder="Title of the first lesson">
-                                                            </div>
-                                                             <div>
-                                                                <label for="lesson-1-1-time" class="form-label text-sm">Time to complete</label>
-                                                                <input type="text" id="lesson-1-1-time" class="form-input text-sm" placeholder="25 min">
-                                                            </div>
-                                                            <div>
-                                                                <label for="lesson-1-1-desc" class="form-label text-sm">Lesson Description</label>
-                                                                <textarea id="lesson-1-1-desc" rows="5" class="form-textarea text-sm" placeholder="Short description of the lesson's topic..."></textarea>
-                                                            </div>
+                                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+                                            <h4 class="text-xl font-semibold">Lessons</h4>
+                                            <button type="button" class="btn btn-outline btn-sm">
+                                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                                Add Lesson
+                                            </button>
+                                        </div>
+                                        <div class="space-y-4">
+                                            <div class="bg-[#f7fafc] dark:bg-gray-900/50 p-5 rounded-lg border border-gray-200 dark:border-gray-600">
+                                                <div class="grid grid-cols-10 gap-6">
+                                                    <div class="col-span-10 lg:col-span-7 space-y-4">
+                                                        <div>
+                                                            <label for="lesson-1-1-name" class="form-label text-sm">Lesson Title</label>
+                                                            <input type="text" id="lesson-1-1-name" class="form-input text-sm" placeholder="Title of the first lesson">
                                                         </div>
-                                                        <div class="col-span-10 lg:col-span-3 flex flex-col">
-                                                            <label class="form-label text-sm">Lesson Image</label>
-                                                            <div class="file-upload-box flex-grow flex flex-col justify-center items-center p-4">
-                                                                <i data-lucide="image-up" class="w-10 h-10 mx-auto text-gray-400"></i>
-                                                                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Click to upload</p>
-                                                                <p class="text-xs text-gray-500">PNG, JPG</p>
-                                                            </div>
+                                                         <div>
+                                                            <label for="lesson-1-1-time" class="form-label text-sm">Time to complete</label>
+                                                            <input type="text" id="lesson-1-1-time" class="form-input text-sm" placeholder="25 min">
                                                         </div>
-                                                        <div class="col-span-10 mt-4">
-                                                            <div id="content-type-wrapper">
-                                                                <div id="content-type-selector" class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
-                                                                    <div class="flex justify-between items-center mb-4">
-                                                                        <h3 class="font-semibold text-base">Select Content Type</h3>
-                                                                    </div>
-                                                                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                                                        <div class="content-type-card" data-type="markdown"><div class="flex items-start gap-3"><i data-lucide="file-text" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Markdown Text</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Text content with Markdown formatting.</p></div></div></div>
-                                                                        <div class="content-type-card" data-type="presentation"><div class="flex items-start gap-3"><i data-lucide="presentation" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Presentation</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Presentation-style content with slides.</p></div></div></div>
-                                                                        <div class="content-type-card" data-type="html"><div class="flex items-start gap-3"><i data-lucide="code-2" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Full HTML Content</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Complete HTML markup with custom styles.</p></div></div></div>
-                                                                        <div class="content-type-card" data-type="html-block"><div class="flex items-start gap-3"><i data-lucide="layout-template" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">HTML Block</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Modular HTML content block for layouts.</p></div></div></div>
-                                                                        <div class="content-type-card" data-type="video"><div class="flex items-start gap-3"><i data-lucide="video" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Video Content</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Embedded video player.</p></div></div></div>
-                                                                        <div class="content-type-card" data-type="flipping"><div class="flex items-start gap-3"><i data-lucide="layers" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Flipping Cards</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive cards that flip when clicked.</p></div></div></div>
-                                                                        <div class="content-type-card" data-type="labyrinth"><div class="flex items-start gap-3"><i data-lucide="network" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Labyrinth</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive decision tree navigation.</p></div></div></div>
-                                                                        <div class="content-type-card" data-type="memory"><div class="flex items-start gap-3"><i data-lucide="puzzle" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Memory Game</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Matching pairs memory game.</p></div></div></div>
-                                                                        <div class="content-type-card" data-type="tag-cloud"><div class="flex items-start gap-3"><i data-lucide="cloud" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Tag Cloud</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive word cloud with definitions.</p></div></div></div>
-                                                                        <div class="content-type-card" data-type="role-play"><div class="flex items-start gap-3"><i data-lucide="message-square" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Role Play Game</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive dialogue scenarios.</p></div></div></div>
+                                                        <div>
+                                                            <label for="lesson-1-1-desc" class="form-label text-sm">Lesson Description</label>
+                                                            <textarea id="lesson-1-1-desc" rows="5" class="form-textarea text-sm" placeholder="Short description of the lesson's topic..."></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-span-10 lg:col-span-3">
+                                                        <label class="form-label text-sm">Lesson Image</label>
+                                                        <div class="file-upload-box flex-grow flex flex-col justify-center items-center p-4">
+                                                            <i data-lucide="image-up" class="w-10 h-10 mx-auto text-gray-400"></i>
+                                                            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Click to upload</p>
+                                                            <p class="text-xs text-gray-500">PNG, JPG</p>
+                                                        </div>
+                                                        <div class="flex items-center my-2">
+                                                            <hr class="flex-grow border-gray-200 dark:border-gray-600">
+                                                            <span class="mx-2 text-xs text-gray-400 dark:text-gray-500">OR</span>
+                                                            <hr class="flex-grow border-gray-200 dark:border-gray-600">
+                                                        </div>
+                                                        <input type="text" class="form-input text-sm" placeholder="Paste image URL...">
+                                                    </div>
+                                                    <div class="col-span-10 mt-4">
+                                                        <div id="content-type-wrapper">
+                                                            <div id="content-type-selector" class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                                                                <div class="flex justify-between items-center mb-4">
+                                                                    <h3 class="font-semibold text-base">Select Content Type</h3>
+                                                                </div>
+                                                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                                                    <div class="content-type-card" data-type="markdown"><div class="flex items-start gap-3"><i data-lucide="file-text" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Markdown Text</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Text content with Markdown formatting.</p></div></div></div>
+                                                                    <div class="content-type-card" data-type="presentation"><div class="flex items-start gap-3"><i data-lucide="presentation" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Presentation</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Presentation-style content with slides.</p></div></div></div>
+                                                                    <div class="content-type-card" data-type="html"><div class="flex items-start gap-3"><i data-lucide="code-2" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Full HTML Content</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Complete HTML markup with custom styles.</p></div></div></div>
+                                                                    <div class="content-type-card" data-type="html-block"><div class="flex items-start gap-3"><i data-lucide="layout-template" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">HTML Block</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Modular HTML content block for layouts.</p></div></div></div>
+                                                                    <div class="content-type-card" data-type="video"><div class="flex items-start gap-3"><i data-lucide="video" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Video Content</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Embedded video player.</p></div></div></div>
+                                                                    <div class="content-type-card" data-type="flipping"><div class="flex items-start gap-3"><i data-lucide="layers" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Flipping Cards</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive cards that flip when clicked.</p></div></div></div>
+                                                                    <div class="content-type-card" data-type="labyrinth"><div class="flex items-start gap-3"><i data-lucide="network" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Labyrinth</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive decision tree navigation.</p></div></div></div>
+                                                                    <div class="content-type-card" data-type="memory"><div class="flex items-start gap-3"><i data-lucide="puzzle" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Memory Game</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Matching pairs memory game.</p></div></div></div>
+                                                                    <div class="content-type-card" data-type="tag-cloud"><div class="flex items-start gap-3"><i data-lucide="cloud" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Tag Cloud</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive word cloud with definitions.</p></div></div></div>
+                                                                    <div class="content-type-card" data-type="role-play"><div class="flex items-start gap-3"><i data-lucide="message-square" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Role Play Game</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive dialogue scenarios.</p></div></div></div>
+                                                                </div>
+                                                            </div>
+                                                            <div id="content-editor-container" class="hidden mt-4">
+                                                                <div id="presentation-editor" class="hidden">
+                                                                    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                                                                        <label for="slide-upload-input" class="w-full file-upload-box !p-4 text-sm mb-4 flex flex-col justify-center items-center">
+                                                                            <i data-lucide="upload-cloud" class="w-8 h-8 text-gray-400 mx-auto"></i>
+                                                                            <span class="mt-2 block">Upload Slides (Images)</span>
+                                                                            <input type="file" id="slide-upload-input" class="hidden" multiple accept="image/*">
+                                                                        </label>
+                                                                        <p class="text-xs text-center text-gray-500 mb-4">Drag and drop slides to reorder them.</p>
+                                                                        <div id="slide-sorter" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[100px]">
+                                                                            </div>
                                                                     </div>
                                                                 </div>
-                                                                <div id="content-editor-container" class="hidden mt-4">
-                                                                    <div id="presentation-editor" class="hidden">
-                                                                        <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
-                                                                            <label for="slide-upload-input" class="w-full file-upload-box !p-4 text-sm mb-4 flex flex-col justify-center items-center">
-                                                                                <i data-lucide="upload-cloud" class="w-8 h-8 text-gray-400 mx-auto"></i>
-                                                                                <span class="mt-2 block">Upload Slides (Images)</span>
-                                                                                <input type="file" id="slide-upload-input" class="hidden" multiple accept="image/*">
-                                                                            </label>
-                                                                            <p class="text-xs text-center text-gray-500 mb-4">Drag and drop slides to reorder them.</p>
-                                                                            <div id="slide-sorter" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[100px]">
-                                                                                </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div id="markdown-editor" class="hidden">
-                                                                        <textarea rows="8" class="form-textarea" placeholder=""></textarea>
-                                                                    </div>
-                                                                     <div class="mt-4 text-right">
-                                                                        <button type="button" class="preview-content-btn btn btn-primary btn-sm">Preview Content</button>
-                                                                    </div>
+                                                                <div id="markdown-editor" class="hidden">
+                                                                    <textarea rows="8" class="form-textarea" placeholder=""></textarea>
                                                                 </div>
-                                                                <div id="content-preview-container" class="hidden mt-4">
-                                                                    </div>
+                                                                 <div class="mt-4 text-right">
+                                                                    <button type="button" class="preview-content-btn btn btn-primary btn-sm">Preview Content</button>
+                                                                </div>
                                                             </div>
+                                                            <div id="content-preview-container" class="hidden mt-4">
+                                                                </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -501,6 +564,91 @@
                 });
             })();
             
+            (function setupSkillsInput() {
+                const skillsInput = document.getElementById('skills-input');
+                const selectedContainer = document.getElementById('selected-skills-container');
+                let selectedSkills = [];
+
+                skillsInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const skill = skillsInput.value.trim();
+                        if (skill && !selectedSkills.includes(skill)) {
+                            selectedSkills.push(skill);
+                            skillsInput.value = '';
+                            updateSkillsUI();
+                        }
+                    }
+                });
+
+                function updateSkillsUI() {
+                    selectedContainer.innerHTML = '';
+                    selectedSkills.forEach(skill => {
+                        const tagEl = document.createElement('span');
+                        tagEl.className = 'skill-tag capitalize';
+                        tagEl.innerHTML = `<span>${skill}</span> <i data-lucide="x" class="remove-tag-btn" data-skill-to-remove="${skill}"></i>`;
+                        selectedContainer.appendChild(tagEl);
+                    });
+                    lucide.createIcons();
+                }
+
+                selectedContainer.addEventListener('click', (e) => {
+                    const removeBtn = e.target.closest('.remove-tag-btn');
+                    if (removeBtn) {
+                        const skillToRemove = removeBtn.dataset.skillToRemove;
+                        selectedSkills = selectedSkills.filter(s => s !== skillToRemove);
+                        updateSkillsUI();
+                    }
+                });
+            })();
+
+            (function setupStatusDropdown() {
+                const wrapper = document.getElementById('status-container-wrapper');
+                if (!wrapper) return;
+
+                const statusSelector = document.getElementById('status-selector');
+                const statusDropdown = document.getElementById('status-dropdown');
+                const statusDisplay = document.getElementById('status-display');
+                const icon = statusSelector.querySelector('i');
+                let currentStatus = 'draft';
+
+                function updateItemStyles() {
+                    statusDropdown.querySelectorAll('.status-item').forEach(item => {
+                        if (item.dataset.status === currentStatus) {
+                            item.classList.add('selected');
+                        } else {
+                            item.classList.remove('selected');
+                        }
+                    });
+                }
+
+                statusSelector.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    statusDropdown.classList.toggle('hidden');
+                    icon.classList.toggle('-rotate-180');
+                });
+
+                statusDropdown.addEventListener('click', (e) => {
+                    const item = e.target.closest('.status-item');
+                    if (item) {
+                        currentStatus = item.dataset.status;
+                        statusDisplay.textContent = item.textContent.trim();
+                        statusDropdown.classList.add('hidden');
+                        icon.classList.remove('-rotate-180');
+                        updateItemStyles();
+                    }
+                });
+
+                window.addEventListener('click', (e) => {
+                    if (!wrapper.contains(e.target)) {
+                        statusDropdown.classList.add('hidden');
+                        icon.classList.remove('-rotate-180');
+                    }
+                });
+
+                updateItemStyles();
+            })();
+
             (function setupProfessionsDropdown() {
                 const professionsData = { 'designers': ['3d designer', 'Graphic designer', 'Illustrator', 'Interior designer', 'Motion designer', 'UI UX designer', 'Web designer', 'Wordpress designer', 'Vizualizer'], 'developers': ['Back end developer', 'Full stack developer', 'Front end developer', 'Mobile developer', 'QA', 'System administrator', 'Prompt engineer'], 'managers': ['Account manager', 'Content manager', 'Event manager', 'Financial manager', 'HR manager', 'Investment manager', 'Influencer manager', 'Product manager', 'Project manager', 'PR manager', 'Sales manager', 'SEO manager', 'Social media manager', 'beginner'], 'marketers': ['Affiliate manager', 'Copywriter', 'Email marketer', 'Lead generator', 'Linkbuilder', 'Media buyer', 'PPC specialist', 'Targetologist'], 'videographers': ['Mobile video editor', 'Video editor'], 'other': ['Analyst', 'Chat operator', 'Personal assistant', 'Proofreader', 'Recruiter', 'Translator', 'Tourism manager'] };
                 const allProfessions = [...new Set(Object.values(professionsData).flat())].sort((a, b) => a.localeCompare(b));
@@ -550,6 +698,20 @@
                         previewContainer.innerHTML = '';
                         previewBtn.querySelector('span').textContent = 'Preview Hero';
                     }
+                });
+            })();
+            
+            (function setupNotifications() {
+                const notificationsBtn = document.getElementById('notifications-btn');
+                const notificationsPanel = document.getElementById('notifications-panel');
+                notificationsBtn.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    notificationsPanel.classList.toggle('hidden');
+                });
+                window.addEventListener('click', (event) => {
+                     if (!event.target.closest('#notifications-btn-container')) {
+                        notificationsPanel.classList.add('hidden');
+                     }
                 });
             })();
 
