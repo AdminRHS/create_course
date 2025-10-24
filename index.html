@@ -279,12 +279,16 @@
             --tw-ring-inset: var(--tw-empty,/*!*/ /*!*/);
             --tw-ring-offset-width: 1px; /* Slightly smaller offset */
             --tw-ring-offset-color: #fff;
-             .dark & { --tw-ring-offset-color: #2d3748; }
+             /* .dark & { --tw-ring-offset-color: #2d3748; } */ /* Removed direct dark mode in CSS for simplicity, rely on JS if needed */
             --tw-ring-color: var(--color-primary-main);
             --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
             --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
             box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
         }
+         .dark .form-checkbox:focus, .dark .form-radio:focus {
+            --tw-ring-offset-color: #2d3748;
+         }
+
     </style>
 </head>
 <body class="text-slate-800 dark:text-slate-50 transition-colors duration-300">
@@ -344,7 +348,7 @@
                             <li><span class="font-semibold text-gray-900 dark:text-gray-200">Create Course</span></li>
                         </ol>
                     </nav>
-                </div>
+                     </div>
 
                 <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                     <h1 class="text-4xl font-bold">Create Course</h1>
@@ -807,6 +811,10 @@
                             item.classList.add('selected'); // Add selected to current
                         }
                     });
+                    // Update button text
+                    const selectedItem = statusDropdown.querySelector('.status-item.selected');
+                    if(selectedItem) statusDisplay.textContent = selectedItem.textContent.trim();
+
                 }
 
                 statusSelector.addEventListener('click', (e) => {
@@ -819,7 +827,7 @@
                     const item = e.target.closest('.status-item');
                     if (item) {
                         currentStatus = item.dataset.status;
-                        statusDisplay.textContent = item.textContent.trim();
+                        // statusDisplay.textContent = item.textContent.trim(); // Moved to updateItemStyles
                         statusDropdown.classList.add('hidden');
                         icon.classList.remove('-rotate-180');
                         updateItemStyles();
@@ -827,14 +835,15 @@
                 });
 
                 window.addEventListener('click', (e) => {
-                    if (!wrapper.contains(e.target)) {
+                    if (wrapper && !wrapper.contains(e.target)) { // Check if wrapper exists
                         statusDropdown.classList.add('hidden');
                         icon.classList.remove('-rotate-180');
                     }
                 });
 
-                updateItemStyles(); // Set initial selected style
+                updateItemStyles(); // Set initial selected style and text
             })();
+
 
             (function setupProfessionsDropdown() {
                 const professionsData = { 'designers': ['3d designer', 'Graphic designer', 'Illustrator', 'Interior designer', 'Motion designer', 'UI UX designer', 'Web designer', 'Wordpress designer', 'Vizualizer'], 'developers': ['Back end developer', 'Full stack developer', 'Front end developer', 'Mobile developer', 'QA', 'System administrator', 'Prompt engineer'], 'managers': ['Account manager', 'Content manager', 'Event manager', 'Financial manager', 'HR manager', 'Investment manager', 'Influencer manager', 'Product manager', 'Project manager', 'PR manager', 'Sales manager', 'SEO manager', 'Social media manager', 'beginner'], 'marketers': ['Affiliate manager', 'Copywriter', 'Email marketer', 'Lead generator', 'Linkbuilder', 'Media buyer', 'PPC specialist', 'Targetologist'], 'videographers': ['Mobile video editor', 'Video editor'], 'other': ['Analyst', 'Chat operator', 'Personal assistant', 'Proofreader', 'Recruiter', 'Translator', 'Tourism manager'] };
@@ -855,7 +864,7 @@
                 professionsList.addEventListener('click', (e) => { const item = e.target.closest('.profession-item'); if (item) { const profession = item.dataset.profession; if (selectedProfessions.includes(profession)) { selectedProfessions = selectedProfessions.filter(p => p !== profession); } else { selectedProfessions.push(profession); } updateSelectedProfessionsUI(); updateListItemStyles(); } });
                 document.getElementById('selected-professions-container').addEventListener('click', (e) => { const removeBtn = e.target.closest('.remove-tag-btn'); if (removeBtn) { e.stopPropagation(); const professionToRemove = removeBtn.dataset.professionToRemove; selectedProfessions = selectedProfessions.filter(p => p !== professionToRemove); updateSelectedProfessionsUI(); updateListItemStyles(); } });
                 searchInput.addEventListener('input', () => { const filter = searchInput.value.toLowerCase(); professionsList.querySelectorAll('.profession-item').forEach(item => { if (item.textContent.toLowerCase().includes(filter)) { item.style.display = 'flex'; } else { item.style.display = 'none'; } }); });
-                window.addEventListener('click', (e) => { if (!professionsContainerWrapper.contains(e.target)) { professionsDropdown.classList.add('hidden'); professionsSelector.querySelector('i').classList.remove('-rotate-180'); } });
+                window.addEventListener('click', (e) => { if (professionsContainerWrapper && !professionsContainerWrapper.contains(e.target)) { professionsDropdown.classList.add('hidden'); professionsSelector.querySelector('i').classList.remove('-rotate-180'); } });
                 populateProfessionsList();
             })();
 
@@ -992,6 +1001,8 @@
                         };
                         reader.readAsDataURL(file);
                     });
+                    // Clear the input value to allow uploading the same file again if needed
+                    e.target.value = null;
                 });
 
                 function renderSlideSorter() {
@@ -1013,7 +1024,7 @@
                     draggedItem = e.target.closest('.slide-thumbnail');
                     if(!draggedItem) return;
                     setTimeout(() => {
-                        draggedItem.classList.add('dragging');
+                        if (draggedItem) draggedItem.classList.add('dragging'); // Check if draggedItem still exists
                     }, 0);
                 });
 
@@ -1052,17 +1063,27 @@
 
                     const indicatorBefore = slideSorter.querySelector('.drop-indicator-before');
                     const indicatorAfter = slideSorter.querySelector('.drop-indicator-after');
+                    
+                    const draggedId = draggedItem.dataset.id;
+                    const draggedIndex = slides.findIndex(s => String(s.id) === draggedId); // Use String for comparison
+
+                    let targetIndex = slides.length; // Default to end
 
                     if (indicatorBefore) {
-                        slideSorter.insertBefore(draggedItem, indicatorBefore);
+                        const beforeId = indicatorBefore.dataset.id;
+                        targetIndex = slides.findIndex(s => String(s.id) === beforeId);
                     } else if (indicatorAfter) {
-                        slideSorter.insertBefore(draggedItem, indicatorAfter.nextSibling);
-                    } else if (slideSorter.children.length === 0 || draggedItem !== slideSorter.lastElementChild) {
-                        slideSorter.appendChild(draggedItem);
+                         const afterId = indicatorAfter.dataset.id;
+                         targetIndex = slides.findIndex(s => String(s.id) === afterId) + 1;
                     }
-                    
-                    const newOrder = Array.from(slideSorter.querySelectorAll('.slide-thumbnail')).map(el => el.dataset.id);
-                    slides.sort((a, b) => newOrder.indexOf(String(a.id)) - newOrder.indexOf(String(b.id)));
+
+                    // Remove item from old position and insert at new position
+                    if (draggedIndex > -1) {
+                        const [movedSlide] = slides.splice(draggedIndex, 1);
+                        // Adjust target index if removing from before the target
+                        if (draggedIndex < targetIndex) targetIndex--;
+                        slides.splice(targetIndex, 0, movedSlide);
+                    }
                     
                     renderSlideSorter(); 
                 });
@@ -1153,9 +1174,10 @@
                  const value = `ans_${answerIndex}`; // Simple value, could be improved if needed
 
                  if (type === 'single' || type === 'truefalse') {
+                     // Using Tailwind class form-radio
                      return `<input type="radio" name="${name}" value="${value}" id="${id}" class="answer-marker form-radio">`;
                  } else if (type === 'multiple') {
-                     // Checkboxes use unique names if submitted as an array, but share group logic
+                     // Using Tailwind class form-checkbox
                      return `<input type="checkbox" name="${name}[]" value="${value}" id="${id}" class="answer-marker form-checkbox">`;
                  }
                  return '';
@@ -1189,10 +1211,14 @@
                        input.placeholder = `Answer option ${index + 1}`;
                    }
                 });
-                // Also re-index marker IDs if necessary (though maybe less critical)
+                // Also re-index marker IDs if necessary
                 answersContainer.querySelectorAll('.answer-row .answer-marker').forEach((marker, index) => {
-                    const qIndex = marker.name.match(/q(\d+)/)[1];
-                    marker.id = `q${qIndex}_ans_${index}`;
+                    // Extract question index carefully
+                    const nameMatch = marker.name.match(/q(\d+)/);
+                    if (nameMatch && nameMatch[1]) {
+                        const qIndex = nameMatch[1];
+                        marker.id = `q${qIndex}_ans_${index}`;
+                    }
                 });
             }
 
@@ -1202,6 +1228,10 @@
                  const questionIndex = parseInt(questionBlock.dataset.questionIndex);
                  const addAnswerButton = questionBlock.querySelector('.add-answer-btn');
                  
+                 // Store checked state before replacing
+                 const checkedValues = [];
+                 answersContainer.querySelectorAll('.answer-marker:checked').forEach(marker => checkedValues.push(marker.value));
+
                  // Update existing markers first
                  answersContainer.querySelectorAll('.answer-row').forEach((row, index) => { // Added index
                      const oldMarker = row.querySelector('.answer-marker');
@@ -1209,10 +1239,17 @@
                      const tempDiv = document.createElement('div');
                      tempDiv.innerHTML = newMarkerHTML;
                      const newMarker = tempDiv.firstChild;
+                     
                      if(oldMarker && newMarker) {
+                         // Restore checked state if value matches (for checkbox -> checkbox)
+                         if (checkedValues.includes(newMarker.value)) {
+                             newMarker.checked = true;
+                         }
                          row.replaceChild(newMarker, oldMarker);
-                     } else if (!oldMarker && newMarker) { // Should not happen often but safe
+                     } else if (!oldMarker && newMarker) { 
                          row.insertBefore(newMarker, row.firstChild);
+                     } else if (oldMarker && !newMarker) { 
+                         oldMarker.remove();
                      }
                  });
 
@@ -1252,6 +1289,7 @@
                  lucide.createIcons(); 
             }
 
+            // Setup custom dropdown for Answer Type within a specific question block
             function setupAnswerTypeDropdown(questionBlock) {
                  const wrapper = questionBlock.querySelector('.answer-type-dropdown-wrapper');
                  if (!wrapper) return;
@@ -1263,6 +1301,7 @@
                  let currentType = menu.querySelector('.answer-type-item.selected')?.dataset.value || 'single'; 
 
                  function updateItemStyles() {
+                     // Update selection style in the dropdown list
                      menu.querySelectorAll('.answer-type-item').forEach(item => {
                          item.classList.remove('selected');
                          if (item.dataset.value === currentType) {
@@ -1272,7 +1311,7 @@
                      // Update button text to reflect current selection
                      const selectedItem = menu.querySelector('.answer-type-item.selected');
                      if (selectedItem) {
-                         display.textContent = selectedItem.textContent.trim();
+                         display.textContent = selectedItem.textContent.trim(); // FIXED: Update button text
                      }
                  }
 
@@ -1283,7 +1322,9 @@
                      testEditor.querySelectorAll('.answer-type-menu').forEach(m => {
                          if (m !== menu) { 
                              m.classList.add('hidden');
-                             m.closest('.answer-type-dropdown-wrapper').querySelector('.answer-type-toggle i')?.classList.remove('-rotate-180');
+                             // Also reset the icon for other dropdowns
+                             const otherToggle = m.closest('.answer-type-dropdown-wrapper')?.querySelector('.answer-type-toggle i');
+                             if(otherToggle) otherToggle.classList.remove('-rotate-180');
                          }
                      });
                      // Toggle current menu
@@ -1294,13 +1335,15 @@
                  menu.addEventListener('click', (e) => {
                      const item = e.target.closest('.answer-type-item');
                      if (item) {
-                         currentType = item.dataset.value;
-                         // display.textContent = item.textContent.trim(); // Update happens in updateItemStyles now
-                         menu.classList.add('hidden');
+                         const newType = item.dataset.value;
+                         if (newType !== currentType) { // Only update if type actually changed
+                            currentType = newType;
+                            updateItemStyles(); // Update styles AND button text
+                            // CRUCIAL: Update markers based on new selection
+                            updateAnswerMarkers(questionBlock, currentType);
+                         }
+                         menu.classList.add('hidden'); // Close menu regardless
                          icon.classList.remove('-rotate-180');
-                         updateItemStyles(); // Update styles AND button text
-                         // CRUCIAL: Update markers based on new selection
-                         updateAnswerMarkers(questionBlock, currentType);
                      }
                  });
                  updateItemStyles(); // Set initial style and button text
@@ -1328,7 +1371,8 @@
                 newMenu.querySelectorAll('.answer-type-item').forEach(item => item.classList.remove('selected')); 
                 newMenu.querySelector('.answer-type-item[data-value="single"]').classList.add('selected'); 
                 newMenu.classList.add('hidden'); 
-                newToggle.querySelector('i').classList.remove('-rotate-180'); 
+                const newIcon = newToggle.querySelector('i');
+                if (newIcon) newIcon.classList.remove('-rotate-180'); 
                 // --- End reset custom dropdown ---
 
                 newQuestionBlock.querySelector('.question-points').value = '10';
@@ -1360,10 +1404,13 @@
                 // Make sure delete buttons in the newly created default answers work
                 newQuestionBlock.querySelectorAll('.delete-answer-btn').forEach(btn => {
                    btn.addEventListener('click', (e) => {
-                       const answerRow = e.target.closest('.answer-row');
-                       const container = answerRow.closest('.test-answers-container');
-                       answerRow.remove();
-                       renumberPlaceholders(container);
+                       // Use closest to find the row, more robust
+                       const answerRow = e.target.closest('.answer-row'); 
+                       if (answerRow) {
+                           const container = answerRow.closest('.test-answers-container');
+                           answerRow.remove();
+                           renumberPlaceholders(container);
+                       }
                    });
                 });
 
@@ -1398,9 +1445,11 @@
                  firstQuestionBlock.querySelectorAll('.delete-answer-btn').forEach(btn => {
                    btn.addEventListener('click', (e) => {
                        const answerRow = e.target.closest('.answer-row');
-                       const container = answerRow.closest('.test-answers-container');
-                       answerRow.remove();
-                       renumberPlaceholders(container);
+                       if (answerRow) {
+                           const container = answerRow.closest('.test-answers-container');
+                           answerRow.remove();
+                           renumberPlaceholders(container);
+                       }
                    });
                 });
              }
