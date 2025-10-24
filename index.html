@@ -8,6 +8,8 @@
     <script>
       tailwind.config = {
         darkMode: 'class',
+        // Add plugin for form styles if needed for better checkbox/radio appearance
+        // plugins: [require('@tailwindcss/forms'),],
       }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -23,19 +25,31 @@
         html { scroll-behavior: smooth; }
         body { font-family: 'Roboto', sans-serif; background-color: #f7fafc; }
         .dark body { background-color: #1a202c; }
-        .form-input, .form-textarea, .form-select {
+        .form-input, .form-textarea, .form-select, .custom-dropdown-toggle { /* Added .custom-dropdown-toggle */
             width: 100%; padding: 12px 16px; border-radius: 12px; background-color: #ffffff;
             border: 1px solid var(--border-color);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: border-color 0.2s ease; /* Removed box-shadow transition */
         }
-        .dark .form-input, .dark .form-textarea, .dark .form-select {
+        /* Style for custom dropdown toggle button */
+        .custom-dropdown-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+            cursor: pointer;
+        }
+        .dark .form-input, .dark .form-textarea, .dark .form-select, .dark .custom-dropdown-toggle {
             background-color: #2d3748; border-color: #424242; color: #f7fafc;
         }
         .form-input::placeholder, .form-textarea::placeholder { color: #a0aec0; }
         .dark .form-input::placeholder, .dark .form-textarea::placeholder { color: #718096; }
-        .form-input:focus, .form-textarea:focus, .form-select:focus, #professions-selector:focus-within {
-            outline: none; border-color: var(--color-primary-main);
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+        /* UPDATED FOCUS STYLE */
+        .form-input:focus, .form-textarea:focus, .form-select:focus,
+        .custom-dropdown-toggle:focus, /* Added focus for custom dropdown */
+        #professions-selector:focus-within {
+            outline: none;
+            border-color: var(--color-primary-main);
+            box-shadow: none; /* Removed box-shadow */
         }
         .form-label { display: block; font-weight: 500; margin-bottom: 8px; color: var(--color-text-primary); }
         .dark .form-label { color: #cbd5e0; }
@@ -47,6 +61,18 @@
         .btn-sm {
             padding: 6px 12px;
             font-size: 14px;
+        }
+        .btn-icon-sm { /* Small icon button style for delete */
+             padding: 4px;
+             border-radius: 6px;
+             color: #718096;
+        }
+         .dark .btn-icon-sm {
+            color: #cbd5e0;
+        }
+        .btn-icon-sm:hover {
+             background-color: rgba(211, 47, 47, 0.1); /* Error color background on hover */
+             color: #d32f2f; /* Error color text on hover */
         }
         .btn-primary { background-color: var(--color-primary-main); color: var(--color-contrast-text); }
         .btn-primary:hover { background-color: var(--color-primary-dark); }
@@ -70,22 +96,26 @@
         .dark .skill-tag, .dark .selected-profession-tag { background-color: #424242; color: #f7fafc; }
         .remove-tag-btn { cursor: pointer; color: #718096; }
         .dark .remove-tag-btn { color: #cbd5e0; }
-        .profession-item {
+        .dropdown-item { /* Style for items in custom dropdowns */
             display: flex;
             align-items: center;
             padding: 8px 12px;
             cursor: pointer;
             border-radius: 6px;
+            width: 100%;
+            text-align: left;
         }
-        .profession-item:hover {
+        .dropdown-item:hover {
             background-color: #f1f5f9;
         }
-        .dark .profession-item:hover {
+        .dark .dropdown-item:hover {
             background-color: #334155;
         }
-        .profession-item.selected {
-            font-weight: 500;
-            color: var(--color-primary-main);
+        .dropdown-item.selected { /* Style for selected item in dropdown */
+             font-weight: 500;
+             /* Optional: Add background color for selected item in the list */
+             /* background-color: rgba(66, 153, 225, 0.1); */
+             color: var(--color-primary-main);
         }
         .custom-checkbox {
             width: 16px;
@@ -180,6 +210,81 @@
          .slide-thumbnail.drop-indicator-after::after {
             transform: scaleY(1);
         }
+         /* Style for test answer radio/checkbox */
+        .answer-marker {
+            margin-right: 12px;
+            flex-shrink: 0;
+            /* Use Tailwind classes for styling radios/checkboxes */
+            width: 16px;
+            height: 16px;
+        }
+        .form-radio {
+            /* Tailwind's form-radio styling */
+             appearance: none;
+             padding: 0;
+             -webkit-print-color-adjust: exact;
+             color-adjust: exact;
+             display: inline-block;
+             vertical-align: middle;
+             background-origin: border-box;
+             user-select: none;
+             flex-shrink: 0;
+             border-radius: 100%;
+             border-width: 1px;
+             border-color: #cbd5e0; /* Default border */
+             color: var(--color-primary-main); /* Checked color */
+        }
+        .dark .form-radio {
+             border-color: #64748b;
+        }
+        .form-radio:checked {
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='currentColor' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+            border-color: transparent;
+            background-color: currentColor;
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .form-checkbox {
+             /* Tailwind's form-checkbox styling */
+            appearance: none;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            color-adjust: exact;
+            display: inline-block;
+            vertical-align: middle;
+            background-origin: border-box;
+            user-select: none;
+            flex-shrink: 0;
+            border-radius: 4px; /* Square */
+            border-width: 1px;
+            border-color: #cbd5e0; /* Default border */
+            color: var(--color-primary-main); /* Checked color */
+        }
+         .dark .form-checkbox {
+             border-color: #64748b;
+        }
+        .form-checkbox:checked {
+             background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+             border-color: transparent;
+             background-color: currentColor;
+             background-size: 100% 100%;
+             background-position: center;
+             background-repeat: no-repeat;
+        }
+        /* ADDED FOCUS RINGS FOR RADIO/CHECKBOX */
+        .form-checkbox:focus, .form-radio:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            --tw-ring-inset: var(--tw-empty,/*!*/ /*!*/);
+            --tw-ring-offset-width: 1px; /* Slightly smaller offset */
+            --tw-ring-offset-color: #fff;
+             .dark & { --tw-ring-offset-color: #2d3748; }
+            --tw-ring-color: var(--color-primary-main);
+            --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+            --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+            box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+        }
     </style>
 </head>
 <body class="text-slate-800 dark:text-slate-50 transition-colors duration-300">
@@ -239,19 +344,6 @@
                             <li><span class="font-semibold text-gray-900 dark:text-gray-200">Create Course</span></li>
                         </ol>
                     </nav>
-                    <div id="notifications-btn-container" class="relative">
-                        <button id="notifications-btn" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200/50 dark:bg-gray-700/50 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                            <i data-lucide="bell" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
-                        </button>
-                        <div id="notifications-panel" class="absolute right-0 mt-2 w-[25rem] bg-white dark:bg-[#1f2937] border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hidden z-30">
-                            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-                                <h3 class="font-semibold text-gray-800 dark:text-gray-200">Notifications</h3>
-                            </div>
-                            <div class="py-2 max-h-96 overflow-y-auto">
-                               <div class="p-4 text-center text-sm text-gray-500">No new notifications</div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
@@ -305,18 +397,18 @@
                            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                                 <div id="status-container-wrapper" class="relative">
                                     <label class="form-label">Status</label>
-                                    <div id="status-selector" class="form-input cursor-pointer flex justify-between items-center">
+                                    <button type="button" id="status-selector" class="custom-dropdown-toggle">
                                         <span id="status-display" class="capitalize">Draft</span>
                                         <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400 transition-transform"></i>
-                                    </div>
+                                    </button>
                                     <div id="status-dropdown" class="absolute mt-2 w-full bg-white dark:bg-[#1f2937] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 hidden">
                                         <div class="p-2">
-                                            <div class="status-item profession-item" data-status="draft">
+                                            <button type="button" class="status-item dropdown-item" data-status="draft">
                                                 <span>Draft</span>
-                                            </div>
-                                            <div class="status-item profession-item" data-status="published">
+                                            </button>
+                                            <button type="button" class="status-item dropdown-item" data-status="published">
                                                 <span>Published</span>
-                                            </div>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -361,7 +453,10 @@
                         <div id="modules-container" class="space-y-4">
                             <div class="border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-sm">
                                 <button type="button" class="accordion-toggle w-full flex justify-between items-center p-5 text-left">
-                                    <h3 class="text-xl font-semibold">Module 1</h3>
+                                     <h3 class="text-xl">
+                                        <span class="font-semibold">Module 1:</span>
+                                        <span class="module-title-display font-normal text-gray-700 dark:text-gray-300"></span>
+                                    </h3>
                                     <i data-lucide="chevron-down" class="accordion-icon w-6 h-6"></i>
                                 </button>
                                 <div class="accordion-content px-6">
@@ -369,7 +464,7 @@
                                         <div class="col-span-10 lg:col-span-7 space-y-6">
                                             <div>
                                                 <label for="module-1-name" class="form-label">Module Title</label>
-                                                <input type="text" id="module-1-name" class="form-input" placeholder="e.g., Installation and Setup">
+                                                <input type="text" id="module-1-name" class="form-input module-title-input" placeholder="Installation and Setup" data-target=".module-title-display">
                                             </div>
                                             <div>
                                                 <label for="module-1-description" class="form-label">Module Description</label>
@@ -406,14 +501,14 @@
                                     <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                                         <div id="module-preview-container" class="hidden my-8">
                                             <div class="flex justify-center items-center gap-4">
-                                                <div style="width: 195px; height: 350px;" class="bg-gray-200 dark:bg-gray-800 rounded-xl shadow-sm relative overflow-hidden">
+                                                <div style="width: 260px; height: 466px;" class="bg-gray-200 dark:bg-gray-800 rounded-xl shadow-sm relative overflow-hidden">
                                                     <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></div>
                                                     <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
                                                         <h4 class="text-sm text-white/80">Module 1</h4>
                                                         <p class="preview-module-title-text font-bold text-lg">Installation and Setup</p>
                                                     </div>
                                                 </div>
-                                                <div style="width: 195px; height: 350px;" class="rounded-xl shadow-xl z-10 overflow-hidden relative module-preview-card">
+                                                <div style="width: 260px; height: 466px;" class="rounded-xl shadow-xl z-10 overflow-hidden relative module-preview-card">
                                                      <img src="photo_3.png" class="absolute top-0 left-0 w-full h-full object-cover" alt="Module Preview Active">
                                                      <video class="w-full h-full object-cover" loop muted>
                                                         <source src="vid_3.mp4" type="video/mp4">
@@ -424,7 +519,7 @@
                                                         <p id="preview-module-title" class="font-bold text-lg">Installation and Setup</p>
                                                     </div>
                                                 </div>
-                                                <div style="width: 195px; height: 350px;" class="bg-gray-200 dark:bg-gray-800 rounded-xl shadow-sm relative overflow-hidden">
+                                                <div style="width: 260px; height: 466px;" class="bg-gray-200 dark:bg-gray-800 rounded-xl shadow-sm relative overflow-hidden">
                                                     <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></div>
                                                     <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
                                                         <h4 class="text-sm text-white/80">Module 1</h4>
@@ -489,6 +584,7 @@
                                                                     <div class="content-type-card" data-type="memory"><div class="flex items-start gap-3"><i data-lucide="puzzle" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Memory Game</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Matching pairs memory game.</p></div></div></div>
                                                                     <div class="content-type-card" data-type="tag-cloud"><div class="flex items-start gap-3"><i data-lucide="cloud" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Tag Cloud</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive word cloud with definitions.</p></div></div></div>
                                                                     <div class="content-type-card" data-type="role-play"><div class="flex items-start gap-3"><i data-lucide="message-square" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Role Play Game</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive dialogue scenarios.</p></div></div></div>
+                                                                    <div class="content-type-card" data-type="test"><div class="flex items-start gap-3"><i data-lucide="clipboard-check" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Test</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Assess understanding with questions.</p></div></div></div>
                                                                 </div>
                                                             </div>
                                                             <div id="content-editor-container" class="hidden mt-4">
@@ -505,10 +601,102 @@
                                                                     </div>
                                                                 </div>
                                                                 <div id="markdown-editor" class="hidden">
-                                                                    <textarea rows="8" class="form-textarea" placeholder=""></textarea>
+                                                                    <textarea rows="8" class="form-textarea" placeholder="Write your markdown content here..."></textarea>
+                                                                </div>
+                                                                <div id="test-editor" class="hidden">
+                                                                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 space-y-6">
+                                                                         <h3 class="text-xl font-semibold border-b border-gray-200 dark:border-gray-600 pb-3 mb-4">Test Details</h3>
+                                                                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                                             <div>
+                                                                                <label for="test-name" class="form-label">Test Name</label>
+                                                                                <input type="text" id="test-name" class="form-input" placeholder="e.g., Module 1 Check">
+                                                                             </div>
+                                                                             <div>
+                                                                                <label for="test-time-limit" class="form-label">Time Limit (minutes)</label>
+                                                                                <input type="number" id="test-time-limit" class="form-input" placeholder="e.g., 30">
+                                                                             </div>
+                                                                             <div>
+                                                                                <label for="test-passing-score" class="form-label">Passing Score (%)</label>
+                                                                                <input type="number" id="test-passing-score" class="form-input" placeholder="e.g., 70" min="0" max="100">
+                                                                             </div>
+                                                                         </div>
+                                                                         <div>
+                                                                            <label for="test-description" class="form-label">Test Description</label>
+                                                                            <textarea id="test-description" rows="3" class="form-textarea" placeholder="Optional instructions or description for the test..."></textarea>
+                                                                         </div>
+
+                                                                         <h3 class="text-xl font-semibold border-b border-gray-200 dark:border-gray-600 pb-3 my-6">Questions</h3>
+
+                                                                         <div id="test-questions-container" class="space-y-6">
+                                                                             <div class="question-block bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                                                                  <div>
+                                                                                     <label class="form-label text-sm">Question Text</label>
+                                                                                     <textarea rows="3" class="form-textarea text-sm question-text" placeholder="Enter the question here..."></textarea>
+                                                                                  </div>
+                                                                                  <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mt-4">
+                                                                                      <div class="md:col-span-3 relative answer-type-dropdown-wrapper">
+                                                                                         <label class="form-label text-sm">Answer Type</label>
+                                                                                         <button type="button" class="custom-dropdown-toggle text-sm answer-type-toggle">
+                                                                                             <span class="answer-type-display">Single Correct Answer</span>
+                                                                                             <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400 transition-transform"></i>
+                                                                                         </button>
+                                                                                         <div class="answer-type-menu absolute mt-2 w-full bg-white dark:bg-[#1f2937] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 hidden">
+                                                                                             <div class="p-2">
+                                                                                                 <button type="button" class="answer-type-item dropdown-item text-sm selected" data-value="single">Single Correct Answer</button>
+                                                                                                 <button type="button" class="answer-type-item dropdown-item text-sm" data-value="multiple">Multiple Correct Answers</button>
+                                                                                                 <button type="button" class="answer-type-item dropdown-item text-sm" data-value="truefalse">True/False</button>
+                                                                                             </div>
+                                                                                         </div>
+                                                                                      </div>
+                                                                                      <div class="md:col-span-2">
+                                                                                         <label class="form-label text-sm">Points</label>
+                                                                                         <input type="number" class="form-input text-sm question-points" placeholder="e.g., 10" min="1" value="10">
+                                                                                      </div>
+                                                                                  </div>
+
+                                                                                  <div class="mt-4">
+                                                                                      <label class="form-label text-sm mb-2">Answers</label>
+                                                                                      <div class="test-answers-container space-y-2">
+                                                                                          <div class="answer-row flex items-center gap-2">
+                                                                                              <input type="radio" name="correct_answer_q1" class="answer-marker form-radio">
+                                                                                              <input type="text" class="form-input text-sm flex-grow" placeholder="Answer option 1">
+                                                                                              <button type="button" class="btn-icon-sm delete-answer-btn">
+                                                                                                  <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                                                                              </button>
+                                                                                          </div>
+                                                                                           <div class="answer-row flex items-center gap-2">
+                                                                                              <input type="radio" name="correct_answer_q1" class="answer-marker form-radio">
+                                                                                              <input type="text" class="form-input text-sm flex-grow" placeholder="Answer option 2">
+                                                                                              <button type="button" class="btn-icon-sm delete-answer-btn">
+                                                                                                  <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                                                                              </button>
+                                                                                          </div>
+                                                                                           <div class="answer-row flex items-center gap-2">
+                                                                                              <input type="radio" name="correct_answer_q1" class="answer-marker form-radio">
+                                                                                              <input type="text" class="form-input text-sm flex-grow" placeholder="Answer option 3">
+                                                                                              <button type="button" class="btn-icon-sm delete-answer-btn">
+                                                                                                  <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                                                                              </button>
+                                                                                          </div>
+                                                                                      </div>
+                                                                                      <div class="mt-2 text-right">
+                                                                                         <button type="button" class="btn btn-outline btn-sm add-answer-btn">
+                                                                                              <i data-lucide="plus" class="w-4 h-4"></i> Add Answer
+                                                                                          </button>
+                                                                                      </div>
+                                                                                  </div>
+                                                                             </div>
+                                                                             </div>
+
+                                                                         <div class="mt-6">
+                                                                              <button type="button" id="add-question-btn" class="btn btn-outline">
+                                                                                  <i data-lucide="plus" class="w-5 h-5"></i> Add Question
+                                                                              </button>
+                                                                         </div>
+                                                                    </div>
                                                                 </div>
                                                                  <div class="mt-4 text-right">
-                                                                    <button type="button" class="preview-content-btn btn btn-primary btn-sm">Preview Content</button>
+                                                                    <button type="button" class="preview-content-btn btn btn-primary btn-sm hidden">Preview Content</button>
                                                                 </div>
                                                             </div>
                                                             <div id="content-preview-container" class="hidden mt-4">
@@ -614,10 +802,9 @@
 
                 function updateItemStyles() {
                     statusDropdown.querySelectorAll('.status-item').forEach(item => {
+                        item.classList.remove('selected'); // Remove selected from all
                         if (item.dataset.status === currentStatus) {
-                            item.classList.add('selected');
-                        } else {
-                            item.classList.remove('selected');
+                            item.classList.add('selected'); // Add selected to current
                         }
                     });
                 }
@@ -646,7 +833,7 @@
                     }
                 });
 
-                updateItemStyles();
+                updateItemStyles(); // Set initial selected style
             })();
 
             (function setupProfessionsDropdown() {
@@ -660,7 +847,7 @@
                 const professionsContainerWrapper = document.getElementById('professions-container-wrapper');
                 const placeholder = document.getElementById('professions-placeholder');
                 
-                const populateProfessionsList = () => { professionsList.innerHTML = ''; allProfessions.forEach(prof => { const item = document.createElement('div'); item.className = 'profession-item capitalize'; item.dataset.profession = prof; item.innerHTML = `<div class="custom-checkbox"></div><span>${prof}</span>`; professionsList.appendChild(item); }); };
+                const populateProfessionsList = () => { professionsList.innerHTML = ''; allProfessions.forEach(prof => { const item = document.createElement('div'); item.className = 'profession-item dropdown-item capitalize'; item.dataset.profession = prof; item.innerHTML = `<div class="custom-checkbox"></div><span>${prof}</span>`; professionsList.appendChild(item); }); };
                 const updateSelectedProfessionsUI = () => { const container = document.getElementById('selected-professions-container'); container.innerHTML = ''; if (selectedProfessions.length > 0) { placeholder.classList.add('hidden'); selectedProfessions.forEach(prof => { const tagEl = document.createElement('span'); tagEl.className = 'selected-profession-tag capitalize'; tagEl.innerHTML = `<span>${prof}</span> <i data-lucide="x" class="remove-tag-btn w-4 h-4" data-profession-to-remove="${prof}"></i>`; container.appendChild(tagEl); }); lucide.createIcons(); } else { placeholder.classList.remove('hidden'); } };
                 const updateListItemStyles = () => { professionsList.querySelectorAll('.profession-item').forEach(item => { if (selectedProfessions.includes(item.dataset.profession)) { item.classList.add('selected'); } else { item.classList.remove('selected'); } }); };
 
@@ -701,20 +888,6 @@
                 });
             })();
             
-            (function setupNotifications() {
-                const notificationsBtn = document.getElementById('notifications-btn');
-                const notificationsPanel = document.getElementById('notifications-panel');
-                notificationsBtn.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    notificationsPanel.classList.toggle('hidden');
-                });
-                window.addEventListener('click', (event) => {
-                     if (!event.target.closest('#notifications-btn-container')) {
-                        notificationsPanel.classList.add('hidden');
-                     }
-                });
-            })();
-
             (function setupModulePreview() {
                 const previewModuleBtn = document.getElementById('preview-module-btn');
                 const modulePreviewContainer = document.getElementById('module-preview-container');
@@ -741,23 +914,62 @@
                 }
             })();
 
+             (function setupModuleTitleSync() {
+                const modulesContainer = document.getElementById('modules-container');
+
+                function updateTitleDisplay(inputElement) {
+                    const targetSelector = inputElement.dataset.target;
+                    const accordionButton = inputElement.closest('.border').querySelector('.accordion-toggle');
+                    if (accordionButton) {
+                        const titleDisplay = accordionButton.querySelector(targetSelector);
+                        if (titleDisplay) {
+                            // Use placeholder if value is empty
+                            titleDisplay.textContent = inputElement.value || inputElement.placeholder || 'Untitled Module'; 
+                        }
+                    }
+                }
+
+                modulesContainer.querySelectorAll('.module-title-input').forEach(input => {
+                    updateTitleDisplay(input); // Set initial text based on value or placeholder
+                });
+
+                modulesContainer.addEventListener('input', (e) => {
+                    if (e.target.classList.contains('module-title-input')) {
+                        updateTitleDisplay(e.target);
+                    }
+                });
+            })();
+
             // --- CONTENT TYPE & EDITOR LOGIC ---
             const contentTypeWrapper = document.getElementById('content-type-wrapper');
             const contentTypeSelector = document.getElementById('content-type-selector');
             const contentEditorContainer = document.getElementById('content-editor-container');
             const contentPreviewContainer = document.getElementById('content-preview-container');
+            const previewContentButton = contentEditorContainer.querySelector('.preview-content-btn'); // Get the preview button
 
             contentTypeSelector.querySelectorAll('.content-type-card').forEach(card => {
                 card.addEventListener('click', () => {
                     contentTypeSelector.querySelectorAll('.content-type-card').forEach(c => c.classList.remove('active'));
                     card.classList.add('active');
                     const type = card.dataset.type;
+                    
+                    // Show/hide preview button based on type
+                    if (type === 'test') {
+                        previewContentButton.classList.add('hidden');
+                    } else {
+                        previewContentButton.classList.remove('hidden');
+                    }
+
                     contentEditorContainer.classList.remove('hidden');
                     contentEditorContainer.querySelectorAll('[id$="-editor"]').forEach(editor => editor.classList.add('hidden'));
-                    const selectedEditor = document.getElementById(`${type}-editor`) || document.getElementById('markdown-editor');
+                    
+                    const selectedEditor = document.getElementById(`${type}-editor`) || document.getElementById('markdown-editor'); // Default to markdown if specific not found
                     if (selectedEditor) {
                         selectedEditor.classList.remove('hidden');
+                    } else {
+                         console.warn(`Editor for type "${type}" not found.`);
                     }
+                    
                     contentPreviewContainer.classList.add('hidden');
                     contentPreviewContainer.innerHTML = '';
                 });
@@ -769,112 +981,115 @@
             let slides = [];
             let draggedItem = null;
 
-            slideUploadInput.addEventListener('change', (e) => {
-                Array.from(e.target.files).forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        const slideData = { id: Date.now() + Math.random(), src: event.target.result };
-                        slides.push(slideData);
-                        renderSlideSorter();
-                    };
-                    reader.readAsDataURL(file);
+            if (slideUploadInput && slideSorter) { // Check if elements exist
+                slideUploadInput.addEventListener('change', (e) => {
+                    Array.from(e.target.files).forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            const slideData = { id: Date.now() + Math.random(), src: event.target.result };
+                            slides.push(slideData);
+                            renderSlideSorter();
+                        };
+                        reader.readAsDataURL(file);
+                    });
                 });
-            });
 
-            function renderSlideSorter() {
-                slideSorter.innerHTML = '';
-                slides.forEach((slide, index) => {
-                    const slideEl = document.createElement('div');
-                    slideEl.className = 'slide-thumbnail relative aspect-[16/9] bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden border dark:border-gray-600';
-                    slideEl.draggable = true;
-                    slideEl.dataset.id = slide.id;
-                    slideEl.innerHTML = `
-                        <img src="${slide.src}" class="w-full h-full object-cover">
-                        <div class="absolute top-1 right-1 bg-black/50 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">${index + 1}</div>
-                    `;
-                    slideSorter.appendChild(slideEl);
-                });
-            }
-
-            slideSorter.addEventListener('dragstart', (e) => {
-                draggedItem = e.target.closest('.slide-thumbnail');
-                if(!draggedItem) return;
-                setTimeout(() => {
-                    draggedItem.classList.add('dragging');
-                }, 0);
-            });
-
-            slideSorter.addEventListener('dragend', (e) => {
-                if(!draggedItem) return;
-                draggedItem.classList.remove('dragging');
-                draggedItem = null;
-                slideSorter.querySelectorAll('.slide-thumbnail').forEach(el => {
-                    el.classList.remove('drop-indicator-before', 'drop-indicator-after');
-                });
-            });
-
-            slideSorter.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                if (!draggedItem) return;
-
-                slideSorter.querySelectorAll('.slide-thumbnail').forEach(el => el.classList.remove('drop-indicator-before', 'drop-indicator-after'));
-                
-                const afterElement = getDragAfterElement(slideSorter, e.clientX);
-                if (afterElement) {
-                    const box = afterElement.getBoundingClientRect();
-                    const offset = e.clientX - box.left - box.width / 2;
-                    if(offset < 0) {
-                        afterElement.classList.add('drop-indicator-before');
-                    } else {
-                        afterElement.classList.add('drop-indicator-after');
-                    }
-                } else if (slideSorter.children.length > 0 && draggedItem !== slideSorter.lastElementChild) {
-                    slideSorter.lastElementChild.classList.add('drop-indicator-after');
+                function renderSlideSorter() {
+                    slideSorter.innerHTML = '';
+                    slides.forEach((slide, index) => {
+                        const slideEl = document.createElement('div');
+                        slideEl.className = 'slide-thumbnail relative aspect-[16/9] bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden border dark:border-gray-600';
+                        slideEl.draggable = true;
+                        slideEl.dataset.id = slide.id;
+                        slideEl.innerHTML = `
+                            <img src="${slide.src}" class="w-full h-full object-cover">
+                            <div class="absolute top-1 right-1 bg-black/50 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">${index + 1}</div>
+                        `;
+                        slideSorter.appendChild(slideEl);
+                    });
                 }
-            });
-            
-            slideSorter.addEventListener('drop', (e) => {
-                e.preventDefault();
-                if (!draggedItem) return;
 
-                const indicatorBefore = slideSorter.querySelector('.drop-indicator-before');
-                const indicatorAfter = slideSorter.querySelector('.drop-indicator-after');
+                slideSorter.addEventListener('dragstart', (e) => {
+                    draggedItem = e.target.closest('.slide-thumbnail');
+                    if(!draggedItem) return;
+                    setTimeout(() => {
+                        draggedItem.classList.add('dragging');
+                    }, 0);
+                });
 
-                if (indicatorBefore) {
-                    slideSorter.insertBefore(draggedItem, indicatorBefore);
-                } else if (indicatorAfter) {
-                    slideSorter.insertBefore(draggedItem, indicatorAfter.nextSibling);
-                } else if (slideSorter.children.length === 0 || draggedItem !== slideSorter.lastElementChild) {
-                    slideSorter.appendChild(draggedItem);
-                }
-                
-                const newOrder = Array.from(slideSorter.querySelectorAll('.slide-thumbnail')).map(el => el.dataset.id);
-                slides.sort((a, b) => newOrder.indexOf(String(a.id)) - newOrder.indexOf(String(b.id)));
-                
-                renderSlideSorter(); 
-            });
+                slideSorter.addEventListener('dragend', (e) => {
+                    if(!draggedItem) return;
+                    draggedItem.classList.remove('dragging');
+                    draggedItem = null;
+                    slideSorter.querySelectorAll('.slide-thumbnail').forEach(el => {
+                        el.classList.remove('drop-indicator-before', 'drop-indicator-after');
+                    });
+                });
 
-            function getDragAfterElement(container, x) {
-                const draggableElements = [...container.querySelectorAll('.slide-thumbnail:not(.dragging)')];
-                return draggableElements.reduce((closest, child) => {
-                    const box = child.getBoundingClientRect();
-                    const offset = x - box.left - box.width / 2;
-                    if (offset < 0 && offset > closest.offset) {
-                        return { offset: offset, element: child };
-                    } else {
-                        return closest;
+                slideSorter.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    if (!draggedItem) return;
+
+                    slideSorter.querySelectorAll('.slide-thumbnail').forEach(el => el.classList.remove('drop-indicator-before', 'drop-indicator-after'));
+                    
+                    const afterElement = getDragAfterElement(slideSorter, e.clientX);
+                    if (afterElement) {
+                        const box = afterElement.getBoundingClientRect();
+                        const offset = e.clientX - box.left - box.width / 2;
+                        if(offset < 0) {
+                            afterElement.classList.add('drop-indicator-before');
+                        } else {
+                            afterElement.classList.add('drop-indicator-after');
+                        }
+                    } else if (slideSorter.children.length > 0 && draggedItem !== slideSorter.lastElementChild) {
+                        slideSorter.lastElementChild.classList.add('drop-indicator-after');
                     }
-                }, { offset: Number.NEGATIVE_INFINITY }).element;
-            }
+                });
+                
+                slideSorter.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (!draggedItem) return;
+
+                    const indicatorBefore = slideSorter.querySelector('.drop-indicator-before');
+                    const indicatorAfter = slideSorter.querySelector('.drop-indicator-after');
+
+                    if (indicatorBefore) {
+                        slideSorter.insertBefore(draggedItem, indicatorBefore);
+                    } else if (indicatorAfter) {
+                        slideSorter.insertBefore(draggedItem, indicatorAfter.nextSibling);
+                    } else if (slideSorter.children.length === 0 || draggedItem !== slideSorter.lastElementChild) {
+                        slideSorter.appendChild(draggedItem);
+                    }
+                    
+                    const newOrder = Array.from(slideSorter.querySelectorAll('.slide-thumbnail')).map(el => el.dataset.id);
+                    slides.sort((a, b) => newOrder.indexOf(String(a.id)) - newOrder.indexOf(String(b.id)));
+                    
+                    renderSlideSorter(); 
+                });
+
+                function getDragAfterElement(container, x) {
+                    const draggableElements = [...container.querySelectorAll('.slide-thumbnail:not(.dragging)')];
+                    return draggableElements.reduce((closest, child) => {
+                        const box = child.getBoundingClientRect();
+                        const offset = x - box.left - box.width / 2;
+                        if (offset < 0 && offset > closest.offset) {
+                            return { offset: offset, element: child };
+                        } else {
+                            return closest;
+                        }
+                    }, { offset: Number.NEGATIVE_INFINITY }).element;
+                }
+            } // End of presentation check
             
             document.querySelectorAll('.preview-content-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const activeEditor = contentEditorContainer.querySelector('[id$="-editor"]:not(.hidden)');
                     if (activeEditor && activeEditor.id === 'presentation-editor') {
                         previewPresentation();
-                    } else {
+                    } else if (activeEditor && activeEditor.id === 'markdown-editor') {
                         previewMarkdown();
-                    }
+                    } 
+                    // No preview action for 'test-editor'
                 });
             });
 
@@ -918,14 +1133,301 @@
 
             function previewMarkdown() {
                 contentPreviewContainer.classList.remove('hidden');
-                const text = document.querySelector('#markdown-editor textarea').value;
+                const text = document.querySelector('#markdown-editor textarea')?.value || ''; // Added safe check
                 contentPreviewContainer.innerHTML = `
                     <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
                         <h4 class="font-semibold mb-2">Text Preview</h4>
                         <div class="prose dark:prose-invert max-w-none">${text || 'No content yet.'}</div>
                     </div>`;
             }
-        });
+
+            // --- TEST EDITOR LOGIC ---
+            const testEditor = document.getElementById('test-editor');
+            const questionsContainer = document.getElementById('test-questions-container');
+            const addQuestionBtn = document.getElementById('add-question-btn');
+            let questionCounter = 1; // Start from 1 as one question exists
+
+            function getAnswerMarkerHTML(type, questionIndex, answerIndex) {
+                 const name = `correct_answer_q${questionIndex}`; // Unique name per question group (for radio)
+                 const id = `q${questionIndex}_ans_${answerIndex}`; // Unique ID for label association
+                 const value = `ans_${answerIndex}`; // Simple value, could be improved if needed
+
+                 if (type === 'single' || type === 'truefalse') {
+                     return `<input type="radio" name="${name}" value="${value}" id="${id}" class="answer-marker form-radio">`;
+                 } else if (type === 'multiple') {
+                     // Checkboxes use unique names if submitted as an array, but share group logic
+                     return `<input type="checkbox" name="${name}[]" value="${value}" id="${id}" class="answer-marker form-checkbox">`;
+                 }
+                 return '';
+            }
+
+             function createAnswerRow(questionIndex, answerIndex, type = 'single') {
+                const row = document.createElement('div');
+                row.className = 'answer-row flex items-center gap-2';
+                const markerHTML = getAnswerMarkerHTML(type, questionIndex, answerIndex); // Pass answerIndex too
+                row.innerHTML = `
+                    ${markerHTML}
+                    <input type="text" class="form-input text-sm flex-grow" placeholder="Answer option ${answerIndex + 1}">
+                    <button type="button" class="btn-icon-sm delete-answer-btn">
+                        <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i> </button>
+                `;
+                // Add event listener directly to the new button
+                row.querySelector('.delete-answer-btn').addEventListener('click', () => {
+                    const container = row.closest('.test-answers-container');
+                    row.remove();
+                    renumberPlaceholders(container);
+                });
+                return row;
+            }
+             
+            // Helper to renumber answer placeholders after deletion
+            function renumberPlaceholders(answersContainer) {
+                if (!answersContainer) return;
+                answersContainer.querySelectorAll('.answer-row input[type="text"]').forEach((input, index) => {
+                   // Only update placeholder if not readonly (i.e., not True/False)
+                   if (!input.readOnly) {
+                       input.placeholder = `Answer option ${index + 1}`;
+                   }
+                });
+                // Also re-index marker IDs if necessary (though maybe less critical)
+                answersContainer.querySelectorAll('.answer-row .answer-marker').forEach((marker, index) => {
+                    const qIndex = marker.name.match(/q(\d+)/)[1];
+                    marker.id = `q${qIndex}_ans_${index}`;
+                });
+            }
+
+
+            function updateAnswerMarkers(questionBlock, newType) {
+                 const answersContainer = questionBlock.querySelector('.test-answers-container');
+                 const questionIndex = parseInt(questionBlock.dataset.questionIndex);
+                 const addAnswerButton = questionBlock.querySelector('.add-answer-btn');
+                 
+                 // Update existing markers first
+                 answersContainer.querySelectorAll('.answer-row').forEach((row, index) => { // Added index
+                     const oldMarker = row.querySelector('.answer-marker');
+                     const newMarkerHTML = getAnswerMarkerHTML(newType, questionIndex, index); // Pass index
+                     const tempDiv = document.createElement('div');
+                     tempDiv.innerHTML = newMarkerHTML;
+                     const newMarker = tempDiv.firstChild;
+                     if(oldMarker && newMarker) {
+                         row.replaceChild(newMarker, oldMarker);
+                     } else if (!oldMarker && newMarker) { // Should not happen often but safe
+                         row.insertBefore(newMarker, row.firstChild);
+                     }
+                 });
+
+                 // Special case for True/False
+                 if (newType === 'truefalse') {
+                     const answerRows = Array.from(answersContainer.querySelectorAll('.answer-row'));
+                     // Remove extra answers beyond the first two
+                     answerRows.slice(2).forEach(row => row.remove());
+                     
+                     // Ensure exactly two answers exist
+                     while (answersContainer.children.length < 2) {
+                        const newAnswerIndex = answersContainer.children.length;
+                        // Pass the correct type when creating
+                        answersContainer.appendChild(createAnswerRow(questionIndex, newAnswerIndex, newType)); 
+                     }
+                     
+                     // Set text and make readonly
+                     const inputs = answersContainer.querySelectorAll('input[type="text"]');
+                     if(inputs[0]) { inputs[0].value = "True"; inputs[0].readOnly = true; inputs[0].placeholder = ''; }
+                     if(inputs[1]) { inputs[1].value = "False"; inputs[1].readOnly = true; inputs[1].placeholder = ''; }
+
+                     // Hide add button
+                     if(addAnswerButton) addAnswerButton.classList.add('hidden');
+                 } else {
+                     // Make text inputs editable again and show add button
+                     answersContainer.querySelectorAll('input[type="text"]').forEach(input => {
+                        input.readOnly = false;
+                        // Clear True/False values if switching away from it
+                        if (input.value === "True" || input.value === "False") {
+                           input.value = ''; 
+                        }
+                     });
+                     if(addAnswerButton) addAnswerButton.classList.remove('hidden');
+                     renumberPlaceholders(answersContainer); // Renumber after potential clearing
+                 }
+                 // Ensure icons are rendered for potential new delete buttons in true/false creation
+                 lucide.createIcons(); 
+            }
+
+            function setupAnswerTypeDropdown(questionBlock) {
+                 const wrapper = questionBlock.querySelector('.answer-type-dropdown-wrapper');
+                 if (!wrapper) return;
+                 const toggle = wrapper.querySelector('.answer-type-toggle');
+                 const menu = wrapper.querySelector('.answer-type-menu');
+                 const display = wrapper.querySelector('.answer-type-display');
+                 const icon = toggle.querySelector('i');
+                 // Get initial type from selected item in HTML or default
+                 let currentType = menu.querySelector('.answer-type-item.selected')?.dataset.value || 'single'; 
+
+                 function updateItemStyles() {
+                     menu.querySelectorAll('.answer-type-item').forEach(item => {
+                         item.classList.remove('selected');
+                         if (item.dataset.value === currentType) {
+                             item.classList.add('selected');
+                         }
+                     });
+                     // Update button text to reflect current selection
+                     const selectedItem = menu.querySelector('.answer-type-item.selected');
+                     if (selectedItem) {
+                         display.textContent = selectedItem.textContent.trim();
+                     }
+                 }
+
+                 toggle.addEventListener('click', (e) => {
+                     e.stopPropagation();
+                     const isHidden = menu.classList.contains('hidden');
+                     // Close all *other* answer type dropdowns within the test editor
+                     testEditor.querySelectorAll('.answer-type-menu').forEach(m => {
+                         if (m !== menu) { 
+                             m.classList.add('hidden');
+                             m.closest('.answer-type-dropdown-wrapper').querySelector('.answer-type-toggle i')?.classList.remove('-rotate-180');
+                         }
+                     });
+                     // Toggle current menu
+                     menu.classList.toggle('hidden');
+                     icon.classList.toggle('-rotate-180');
+                 });
+
+                 menu.addEventListener('click', (e) => {
+                     const item = e.target.closest('.answer-type-item');
+                     if (item) {
+                         currentType = item.dataset.value;
+                         // display.textContent = item.textContent.trim(); // Update happens in updateItemStyles now
+                         menu.classList.add('hidden');
+                         icon.classList.remove('-rotate-180');
+                         updateItemStyles(); // Update styles AND button text
+                         // CRUCIAL: Update markers based on new selection
+                         updateAnswerMarkers(questionBlock, currentType);
+                     }
+                 });
+                 updateItemStyles(); // Set initial style and button text
+             }
+
+            function addQuestion() {
+                questionCounter++;
+                const template = questionsContainer.querySelector('.question-block');
+                 if (!template) {
+                     console.error("Question block template not found!");
+                     return; 
+                 }
+                const newQuestionBlock = template.cloneNode(true);
+                
+                newQuestionBlock.dataset.questionIndex = questionCounter; // Set index
+                
+                // Clear input values in the clone
+                newQuestionBlock.querySelector('.question-text').value = '';
+                
+                // --- Reset custom dropdown ---
+                const newToggle = newQuestionBlock.querySelector('.answer-type-toggle');
+                const newMenu = newQuestionBlock.querySelector('.answer-type-menu');
+                const newDisplay = newQuestionBlock.querySelector('.answer-type-display');
+                newDisplay.textContent = 'Single Correct Answer'; // Reset text
+                newMenu.querySelectorAll('.answer-type-item').forEach(item => item.classList.remove('selected')); 
+                newMenu.querySelector('.answer-type-item[data-value="single"]').classList.add('selected'); 
+                newMenu.classList.add('hidden'); 
+                newToggle.querySelector('i').classList.remove('-rotate-180'); 
+                // --- End reset custom dropdown ---
+
+                newQuestionBlock.querySelector('.question-points').value = '10';
+                
+                // Set unique name for radio/checkbox markers in the new question block
+                const answersContainer = newQuestionBlock.querySelector('.test-answers-container');
+                answersContainer.innerHTML = ''; // Clear default answers from clone
+                
+                // Add default 3 answers for the new question (type 'single' initially)
+                for (let i = 0; i < 3; i++) {
+                    answersContainer.appendChild(createAnswerRow(questionCounter, i, 'single'));
+                }
+                
+                // Add event listener for the Add Answer button in the new block
+                newQuestionBlock.querySelector('.add-answer-btn').addEventListener('click', (e) => {
+                    const currentQuestionBlock = e.target.closest('.question-block');
+                    const currentAnswersContainer = currentQuestionBlock.querySelector('.test-answers-container');
+                    const newAnswerIndex = currentAnswersContainer.children.length;
+                    const questionIndex = parseInt(currentQuestionBlock.dataset.questionIndex);
+                    // Read the CURRENT type from the custom dropdown's selected item data-value
+                    const currentType = currentQuestionBlock.querySelector('.answer-type-item.selected')?.dataset.value || 'single'; 
+                    currentAnswersContainer.appendChild(createAnswerRow(questionIndex, newAnswerIndex, currentType));
+                    lucide.createIcons();
+                });
+
+                // Setup the custom dropdown functionality for the new block
+                setupAnswerTypeDropdown(newQuestionBlock);
+
+                // Make sure delete buttons in the newly created default answers work
+                newQuestionBlock.querySelectorAll('.delete-answer-btn').forEach(btn => {
+                   btn.addEventListener('click', (e) => {
+                       const answerRow = e.target.closest('.answer-row');
+                       const container = answerRow.closest('.test-answers-container');
+                       answerRow.remove();
+                       renumberPlaceholders(container);
+                   });
+                });
+
+                questionsContainer.appendChild(newQuestionBlock);
+                lucide.createIcons(); // Re-render all icons
+            }
+
+            if(addQuestionBtn) {
+                 addQuestionBtn.addEventListener('click', addQuestion);
+            }
+            
+            // Initial setup for the FIRST question's elements
+             const firstQuestionBlock = questionsContainer.querySelector('.question-block');
+             if(firstQuestionBlock) {
+                 firstQuestionBlock.dataset.questionIndex = 1; // Set index for the first question
+                 
+                 // Add Answer button
+                 firstQuestionBlock.querySelector('.add-answer-btn').addEventListener('click', (e) => {
+                    const currentQuestionBlock = e.target.closest('.question-block');
+                    const currentAnswersContainer = currentQuestionBlock.querySelector('.test-answers-container');
+                    const newAnswerIndex = currentAnswersContainer.children.length;
+                    const questionIndex = parseInt(currentQuestionBlock.dataset.questionIndex);
+                    const currentType = currentQuestionBlock.querySelector('.answer-type-item.selected')?.dataset.value || 'single';
+                    currentAnswersContainer.appendChild(createAnswerRow(questionIndex, newAnswerIndex, currentType));
+                    lucide.createIcons();
+                 });
+
+                // Setup custom dropdown
+                 setupAnswerTypeDropdown(firstQuestionBlock);
+
+                 // Delete Answer buttons for initial answers
+                 firstQuestionBlock.querySelectorAll('.delete-answer-btn').forEach(btn => {
+                   btn.addEventListener('click', (e) => {
+                       const answerRow = e.target.closest('.answer-row');
+                       const container = answerRow.closest('.test-answers-container');
+                       answerRow.remove();
+                       renumberPlaceholders(container);
+                   });
+                });
+             }
+             
+             // Global click listener to close dropdowns
+             window.addEventListener('click', (e) => {
+                // Close status dropdown if clicking outside
+                const statusWrapper = document.getElementById('status-container-wrapper');
+                if (statusWrapper && !statusWrapper.contains(e.target)) {
+                    document.getElementById('status-dropdown')?.classList.add('hidden');
+                    document.getElementById('status-selector')?.querySelector('i')?.classList.remove('-rotate-180');
+                }
+                // Close ALL answer type dropdowns if clicking outside any of them
+                if (!e.target.closest('.answer-type-dropdown-wrapper')) {
+                    testEditor?.querySelectorAll('.answer-type-menu').forEach(menu => menu.classList.add('hidden'));
+                    testEditor?.querySelectorAll('.answer-type-toggle i').forEach(icon => icon.classList.remove('-rotate-180'));
+                }
+                // Close professions dropdown if clicking outside
+                 const professionsWrapper = document.getElementById('professions-container-wrapper');
+                 if (professionsWrapper && !professionsWrapper.contains(e.target)) {
+                     document.getElementById('professions-dropdown')?.classList.add('hidden');
+                     document.getElementById('professions-selector')?.querySelector('i')?.classList.remove('-rotate-180');
+                 }
+             });
+
+
+        }); // End DOMContentLoaded
     </script>
 </body>
 </html>
