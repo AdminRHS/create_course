@@ -17,16 +17,24 @@
     <style>
         :root {
             --color-primary-main: #4299e1;
+            --color-primary-light: #63b3ed; /* Додано */
             --color-primary-dark: #3182ce;
             --color-text-primary: #2d3748;
+            --color-text-secondary: #718096; /* Додано */
             --color-contrast-text: #ffffff;
             --border-color: #e0e0e0;
+            --border-color-dark: #424242; /* Додано */
+            --bg-light: #f7fafc;
+            --bg-dark: #1a202c;
+            --bg-paper-light: #ffffff;
+            --bg-paper-dark: #2d3748;
+            --bg-paper-darker: #1f2937;
         }
         html { scroll-behavior: smooth; }
-        body { font-family: 'Roboto', sans-serif; background-color: #f7fafc; }
-        .dark body { background-color: #1a202c; }
+        body { font-family: 'Roboto', sans-serif; background-color: var(--bg-light); }
+        .dark body { background-color: var(--bg-dark); }
         .form-input, .form-textarea, .form-select, .custom-dropdown-toggle { /* Added .custom-dropdown-toggle */
-            width: 100%; padding: 12px 16px; border-radius: 12px; background-color: #ffffff;
+            width: 100%; padding: 12px 16px; border-radius: 12px; background-color: var(--bg-paper-light);
             border: 1px solid var(--border-color);
             transition: border-color 0.2s ease; /* Removed box-shadow transition */
         }
@@ -39,14 +47,14 @@
             cursor: pointer;
         }
         .dark .form-input, .dark .form-textarea, .dark .form-select, .dark .custom-dropdown-toggle {
-            background-color: #2d3748; border-color: #424242; color: #f7fafc;
+            background-color: var(--bg-paper-dark); border-color: var(--border-color-dark); color: #f7fafc;
         }
         .form-input::placeholder, .form-textarea::placeholder { color: #a0aec0; }
         .dark .form-input::placeholder, .dark .form-textarea::placeholder { color: #718096; }
         /* UPDATED FOCUS STYLE */
         .form-input:focus, .form-textarea:focus, .form-select:focus,
         .custom-dropdown-toggle:focus, /* Added focus for custom dropdown */
-        #professions-selector:focus-within {
+        .professions-selector:focus-within { /* Змінено ID на CLASS */
             outline: none;
             border-color: var(--color-primary-main);
             box-shadow: none; /* Removed box-shadow */
@@ -78,22 +86,73 @@
         .btn-primary:hover { background-color: var(--color-primary-dark); }
         .btn-outline { background-color: transparent; color: var(--color-primary-main); border: 1px solid var(--color-primary-main); }
         .btn-outline:hover { background-color: rgba(66, 153, 225, 0.1); }
+
+        /* ДОДАНО: btn-outline-secondary */
+        .btn-outline-secondary {
+            background-color: transparent;
+            color: var(--color-text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        .dark .btn-outline-secondary {
+            color: #cbd5e0;
+            border: 1px solid var(--border-color-dark);
+        }
+         .btn-outline-secondary:hover {
+            background-color: #f1f5f9; /* gray-100 */
+            border-color: #cbd5e0; /* gray-300 */
+        }
+        .dark .btn-outline-secondary:hover {
+            background-color: #334155; /* slate-700 */
+            border-color: #64748b; /* slate-500 */
+        }
+        /* --- */
+
         .file-upload-box {
             border: 2px dashed var(--border-color); border-radius: 12px;
-            cursor: pointer; transition: border-color 0.2s ease, background-color 0.2s ease; background-color: #ffffff;
+            cursor: pointer; transition: border-color 0.2s ease, background-color 0.2s ease; background-color: var(--bg-paper-light);
         }
-        .dark .file-upload-box { background-color: #1f2937; border-color: #424242; }
-        .file-upload-box:hover { border-color: var(--color-primary-main); background-color: #f7fafc; }
-        .dark .file-upload-box:hover { background-color: #2d3748; }
+        .dark .file-upload-box { background-color: var(--bg-paper-darker); border-color: var(--border-color-dark); }
+        .file-upload-box:hover { border-color: var(--color-primary-main); background-color: var(--bg-light); }
+        .dark .file-upload-box:hover { background-color: var(--bg-paper-dark); }
         .accordion-content { transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out; max-height: 0; opacity: 0; overflow: hidden; padding-top: 0; padding-bottom: 0; }
-        .accordion-content.open { max-height: 3500px; opacity: 1; padding-top: 1rem; padding-bottom: 1.5rem;}
+        .accordion-content.open { max-height: 5500px; opacity: 1; padding-top: 1rem; padding-bottom: 1.5rem;} /* Збільшено max-height ще більше */
         .accordion-icon { transition: transform 0.3s ease; }
         .accordion-icon.open { transform: rotate(180deg); }
-        .skill-tag, .selected-profession-tag {
+
+        /* ЗМІНЕНО: .tool-tag -> .skill-tag */
+        .skill-tag {
             display: inline-flex; align-items: center; gap: 6px; background-color: #e0e0e0;
             color: #2d3748; padding: 4px 8px; border-radius: 6px; font-size: 14px; font-weight: 500;
         }
-        .dark .skill-tag, .dark .selected-profession-tag { background-color: #424242; color: #f7fafc; }
+        .dark .skill-tag { background-color: #424242; color: #f7fafc; }
+
+        /* ДОДАНО: Нові стилі для тегів професій */
+        .profession-tag-base { /* Base style for both */
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 8px; border-radius: 6px; font-size: 14px; font-weight: 500;
+        }
+        .synced-tag { /* Blue style */
+            background-color: rgba(66, 153, 225, 0.15);
+            color: var(--color-primary-main);
+            border: 1px solid var(--color-primary-main);
+        }
+        .dark .synced-tag {
+             background-color: rgba(66, 153, 225, 0.15);
+             color: var(--color-primary-light);
+             border-color: var(--color-primary-light);
+        }
+        .manual-tag { /* Yellow style */
+            background-color: rgba(245, 158, 11, 0.15); /* yellow-600/15 */
+            color: #D97706; /* yellow-600 */
+            border: 1px solid #D97706;
+        }
+         .dark .manual-tag {
+            background-color: rgba(252, 211, 77, 0.15); /* yellow-300/15 */
+            color: #FCD34D; /* yellow-300 */
+            border-color: #FCD34D;
+        }
+        /* --- */
+
         .remove-tag-btn { cursor: pointer; color: #718096; }
         .dark .remove-tag-btn { color: #cbd5e0; }
         .dropdown-item { /* Style for items in custom dropdowns */
@@ -113,8 +172,6 @@
         }
         .dropdown-item.selected { /* Style for selected item in dropdown */
              font-weight: 500;
-             /* Optional: Add background color for selected item in the list */
-             /* background-color: rgba(66, 153, 225, 0.1); */
              color: var(--color-primary-main);
         }
         .custom-checkbox {
@@ -158,7 +215,7 @@
             padding: 1rem;
             transition: all 0.2s ease;
             cursor: pointer;
-            background-color: #ffffff;
+            background-color: var(--bg-paper-light);
         }
         .content-type-card:hover {
             border-color: var(--color-primary-main);
@@ -170,7 +227,7 @@
              box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.5);
         }
         .dark .content-type-card {
-            background-color: #2d3748;
+            background-color: var(--bg-paper-dark);
             border-color: #4a5568;
         }
         .dark .content-type-card:hover, .dark .content-type-card.active {
@@ -339,7 +396,7 @@
 
         <main class="ml-64 flex-1 bg-[#f7fafc] dark:bg-[#1a202c] p-6 lg:p-8">
             <div class="max-w-7xl mx-auto">
-                
+
                  <div class="flex justify-between items-center mb-6">
                     <nav aria-label="Breadcrumb">
                         <ol class="flex items-center gap-2 text-sm">
@@ -348,8 +405,11 @@
                             <li><span class="font-semibold text-gray-900 dark:text-gray-200">Create Course</span></li>
                         </ol>
                     </nav>
-                     </div>
-
+                    <button class="btn btn-outline-secondary btn-sm">
+                        <i data-lucide="file-code" class="w-4 h-4"></i>
+                        JSON Import/Export
+                    </button>
+                 </div>
                 <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                     <h1 class="text-4xl font-bold">Create Course</h1>
                     <button class="btn btn-primary w-full sm:w-auto">
@@ -378,39 +438,59 @@
                                 <div id="selected-skills-container" class="flex flex-wrap gap-2 mb-2">
                                 </div>
                                 <input type="text" id="skills-input" class="form-input" placeholder="Type a skill and press Enter">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">These skills will be automatically added to the employee's resume upon completion.</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Skills acquired upon course completion (e.g., Communication, Design Thinking).</p>
                             </div>
-                            <div class="relative" id="professions-container-wrapper">
-                                <label class="form-label">Professions</label>
-                                <div id="selected-professions-container" class="flex flex-wrap gap-2 items-center mb-2">
+                            <div class="relative custom-dropdown-wrapper" id="course-difficulty-wrapper">
+                                <label class="form-label">Difficulty</label>
+                                <button type="button" class="custom-dropdown-toggle">
+                                    <span class="custom-dropdown-display capitalize">Beginner</span>
+                                    <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400 transition-transform"></i>
+                                </button>
+                                <div class="custom-dropdown-menu absolute mt-2 w-full bg-white dark:bg-[#1f2937] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 hidden">
+                                    <div class="p-2">
+                                        <button type="button" class="dropdown-item selected" data-value="beginner">
+                                            <span>Beginner</span>
+                                        </button>
+                                        <button type="button" class="dropdown-item" data-value="intermediate">
+                                            <span>Intermediate</span>
+                                        </button>
+                                        <button type="button" class="dropdown-item" data-value="advanced">
+                                            <span>Advanced</span>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div id="professions-selector" class="form-input cursor-pointer flex justify-between items-center">
-                                    <span id="professions-placeholder" class="text-gray-500 dark:text-gray-400">Select professions</span>
+                            </div>
+                            <div class="relative professions-container-wrapper" id="course-professions-wrapper">
+                                <label class="form-label">Professions</label>
+                                <div class="selected-professions-container flex flex-wrap gap-2 items-center mb-2">
+                                    </div>
+                                <div class="professions-selector form-input cursor-pointer flex justify-between items-center">
+                                    <span class="professions-placeholder text-gray-500 dark:text-gray-400">Select professions</span>
                                     <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400 transition-transform"></i>
                                 </div>
-                                <div id="professions-dropdown" class="absolute bottom-full mb-2 w-full bg-white dark:bg-[#1f2937] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 hidden flex flex-col">
+                                <div class="professions-dropdown absolute bottom-full mb-2 w-full bg-white dark:bg-[#1f2937] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 hidden flex flex-col">
                                     <div class="p-2 border-b border-gray-200 dark:border-gray-600">
-                                        <input type="text" id="profession-search-input" placeholder="Select professions" class="form-input text-sm !py-2">
+                                        <input type="text" class="profession-search-input form-input text-sm !py-2" placeholder="Search or add new profession...">
                                     </div>
-                                    <div id="professions-list" class="max-h-60 overflow-y-auto p-2">
+                                    <div class="professions-list max-h-60 overflow-y-auto p-2">
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-span-10 lg:col-span-3 grid grid-cols-1 gap-6 content-start">
                            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-                                <div id="status-container-wrapper" class="relative">
+                                <div class="relative custom-dropdown-wrapper" id="course-status-wrapper">
                                     <label class="form-label">Status</label>
-                                    <button type="button" id="status-selector" class="custom-dropdown-toggle">
-                                        <span id="status-display" class="capitalize">Draft</span>
+                                    <button type="button" class="custom-dropdown-toggle">
+                                        <span class="custom-dropdown-display capitalize">Draft</span>
                                         <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400 transition-transform"></i>
                                     </button>
-                                    <div id="status-dropdown" class="absolute mt-2 w-full bg-white dark:bg-[#1f2937] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 hidden">
+                                    <div class="custom-dropdown-menu absolute mt-2 w-full bg-white dark:bg-[#1f2937] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 hidden">
                                         <div class="p-2">
-                                            <button type="button" class="status-item dropdown-item" data-status="draft">
+                                            <button type="button" class="dropdown-item selected" data-value="draft">
                                                 <span>Draft</span>
                                             </button>
-                                            <button type="button" class="status-item dropdown-item" data-status="published">
+                                            <button type="button" class="dropdown-item" data-value="published">
                                                 <span>Published</span>
                                             </button>
                                         </div>
@@ -437,45 +517,85 @@
                                 <label for="main-video-url" class="form-label">Main Video URL</label>
                                 <input id="main-video-url" type="text" class="form-input" placeholder="Paste video URL...">
                            </div>
+                           <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                                <label class="form-label">Materials</label>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Add downloadable files or links for the course.</p>
+                                <div id="materials-container" class="space-y-4 min-h-[20px]"> </div>
+                                <button type="button" id="add-material-btn" class="btn btn-outline btn-sm w-full mt-4">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                    Add Material
+                                </button>
+                           </div>
                            <button type="button" id="preview-hero-btn" class="btn btn-primary w-full">
                                <i data-lucide="eye" class="w-5 h-5"></i>
                                <span>Preview Hero</span>
                            </button>
                         </div>
                     </section>
-                    
+
                     <div id="hero-preview-container" class="hidden"></div>
 
                     <section>
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                             <h2 class="text-3xl font-bold">Course Modules</h2>
-                            <button type="button" class="btn btn-outline w-full sm:w-auto">
-                                <i data-lucide="plus-circle" class="w-5 h-5"></i>
-                                Add Module
-                            </button>
+                            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                <button type="button" class="btn btn-outline w-full sm:w-auto"> <i data-lucide="library" class="w-5 h-5"></i>
+                                    Add Existing Module
+                                </button>
+                                <button type="button" class="btn btn-primary w-full sm:w-auto"> <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                                    Add New Module
+                                </button>
+                            </div>
                         </div>
                         <div id="modules-container" class="space-y-4">
                             <div class="border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-sm">
-                                <button type="button" class="accordion-toggle w-full flex justify-between items-center p-5 text-left">
-                                     <h3 class="text-xl">
-                                        <span class="font-semibold">Module 1:</span>
-                                        <span class="module-title-display font-normal text-gray-700 dark:text-gray-300"></span>
-                                    </h3>
-                                    <i data-lucide="chevron-down" class="accordion-icon w-6 h-6"></i>
+                                <button type="button" class="accordion-toggle w-full flex justify-between items-center p-5 text-left gap-4">
+                                     <div class="flex items-center gap-3 flex-grow">
+                                        <h3 class="text-xl font-semibold">Module 1:</h3>
+                                        </div>
+                                     <div class="flex items-center gap-4 flex-shrink-0">
+                                        <i data-lucide="chevron-down" class="accordion-icon w-6 h-6"></i>
+                                     </div>
                                 </button>
                                 <div class="accordion-content px-6">
                                     <div class="grid grid-cols-10 gap-6 border-t border-gray-200 dark:border-gray-700 pt-6 pb-6">
-                                        <div class="col-span-10 lg:col-span-7 space-y-6">
-                                            <div>
-                                                <label for="module-1-name" class="form-label">Module Title</label>
-                                                <input type="text" id="module-1-name" class="form-input module-title-input" placeholder="Installation and Setup" data-target=".module-title-display">
+                                        <div class="col-span-10 lg:col-span-7 space-y-6"> <div class="grid grid-cols-1 md:grid-cols-6 gap-6">
+                                                <div class="md:col-span-4">
+                                                    <label for="module-1-name" class="form-label">Module Title</label>
+                                                    <input type="text" id="module-1-name" class="form-input module-title-input" placeholder="Installation and Setup" data-target=".module-title-display">
+                                                </div>
+                                                <div class="md:col-span-2">
+                                                    <label for="module-1-order" class="form-label">Module Order</label>
+                                                    <input type="number" id="module-1-order" class="form-input" placeholder="e.g., 1" min="1">
+                                                </div>
                                             </div>
                                             <div>
                                                 <label for="module-1-description" class="form-label">Module Description</label>
                                                 <textarea id="module-1-description" rows="4" class="form-textarea" placeholder="Describe the goals and content of this module..."></textarea>
                                             </div>
+                                            <div>
+                                                <label for="module-1-content" class="form-label">Module Content</label>
+                                                <textarea id="module-1-content" rows="6" class="form-textarea" placeholder="Enter the main content for this module (optional)..."></textarea>
+                                            </div>
                                         </div>
                                         <div class="col-span-10 lg:col-span-3 space-y-6">
+                                            <div class="relative custom-dropdown-wrapper" id="module-1-status-wrapper">
+                                                <label class="form-label">Status</label>
+                                                <button type="button" class="custom-dropdown-toggle">
+                                                    <span class="custom-dropdown-display capitalize">Draft</span>
+                                                    <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400 transition-transform"></i>
+                                                </button>
+                                                <div class="custom-dropdown-menu absolute mt-2 w-full bg-white dark:bg-[#1f2937] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 hidden">
+                                                    <div class="p-2">
+                                                        <button type="button" class="dropdown-item selected" data-value="draft">
+                                                            <span>Draft</span>
+                                                        </button>
+                                                        <button type="button" class="dropdown-item" data-value="published">
+                                                            <span>Published</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div>
                                                 <label class="form-label">Module Image</label>
                                                 <div class="file-upload-box flex-grow flex flex-col justify-center items-center p-4">
@@ -495,16 +615,17 @@
                                             </div>
                                         </div>
                                         <div class="col-span-10 flex justify-end items-center gap-3">
-                                            <button type="button" id="preview-module-btn" class="btn btn-primary btn-sm">
-                                                <i data-lucide="eye" class="w-4 h-4"></i>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm add-test-to-module-btn"> <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+                                                Add Test
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-sm preview-module-btn"> <i data-lucide="eye" class="w-4 h-4"></i>
                                                 <span>Preview Module</span>
                                             </button>
                                         </div>
-                                    </div>
-                                    
+                                        </div>
+
                                     <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
-                                        <div id="module-preview-container" class="hidden my-8">
-                                            <div class="flex justify-center items-center gap-4">
+                                        <div class="module-preview-container hidden my-8"> <div class="flex justify-center items-center gap-4">
                                                 <div style="width: 260px; height: 466px;" class="bg-gray-200 dark:bg-gray-800 rounded-xl shadow-sm relative overflow-hidden">
                                                     <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></div>
                                                     <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
@@ -520,8 +641,7 @@
                                                     <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/70 via-black/40 to-transparent pointer-events-none"></div>
                                                     <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
                                                         <h4 class="text-sm font-semibold text-white/90">Module 1</h4>
-                                                        <p id="preview-module-title" class="font-bold text-lg">Installation and Setup</p>
-                                                    </div>
+                                                        <p class="preview-module-title font-bold text-lg">Installation and Setup</p> </div>
                                                 </div>
                                                 <div style="width: 260px; height: 466px;" class="bg-gray-200 dark:bg-gray-800 rounded-xl shadow-sm relative overflow-hidden">
                                                     <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -532,13 +652,23 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
                                             <h4 class="text-xl font-semibold">Lessons</h4>
-                                            <button type="button" class="btn btn-outline btn-sm">
-                                                <i data-lucide="plus" class="w-4 h-4"></i>
-                                                Add Lesson
-                                            </button>
+                                            <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto flex-wrap"> <button type="button" class="btn btn-outline-secondary btn-sm">
+                                                    <i data-lucide="file-code" class="w-4 h-4"></i>
+                                                    Import from JSON
+                                                </button>
+                                                 <button type="button" class="btn btn-outline-secondary btn-sm">
+                                                    <i data-lucide="list" class="w-4 h-4"></i>
+                                                    Import Lessons Array
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-sm"> <i data-lucide="plus" class="w-4 h-4"></i>
+                                                    Add Lesson
+                                                </button>
+                                                <button type="button" class="btn btn-outline-secondary btn-sm"> <i data-lucide="library" class="w-4 h-4"></i>
+                                                    Select from Library
+                                                </button>
+                                            </div>
                                         </div>
                                         <div class="space-y-4">
                                             <div class="bg-[#f7fafc] dark:bg-gray-900/50 p-5 rounded-lg border border-gray-200 dark:border-gray-600">
@@ -549,27 +679,96 @@
                                                             <input type="text" id="lesson-1-1-name" class="form-input text-sm" placeholder="Title of the first lesson">
                                                         </div>
                                                          <div>
-                                                            <label for="lesson-1-1-time" class="form-label text-sm">Time to complete</label>
-                                                            <input type="text" id="lesson-1-1-time" class="form-input text-sm" placeholder="25 min">
+                                                            <label for="lesson-1-1-duration" class="form-label text-sm">Duration</label>
+                                                            <input type="text" id="lesson-1-1-duration" class="form-input text-sm" placeholder="25 min">
                                                         </div>
-                                                        <div>
+                                                        <div class="relative custom-dropdown-wrapper" id="lesson-1-1-type-wrapper">
+                                                            <label class="form-label text-sm">Lesson Type</label>
+                                                            <button type="button" class="custom-dropdown-toggle text-sm">
+                                                                <span class="custom-dropdown-display capitalize">Text</span>
+                                                                <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400 transition-transform"></i>
+                                                            </button>
+                                                            <div class="custom-dropdown-menu absolute mt-2 w-full bg-white dark:bg-[#1f2937] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 hidden">
+                                                                <div class="p-2">
+                                                                    <button type="button" class="dropdown-item text-sm selected" data-value="text">
+                                                                        <span>Text</span>
+                                                                    </button>
+                                                                    <button type="button" class="dropdown-item text-sm" data-value="video">
+                                                                        <span>Video</span>
+                                                                    </button>
+                                                                    <button type="button" class="dropdown-item text-sm" data-value="interactive">
+                                                                        <span>Interactive</span>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="relative professions-container-wrapper" id="lesson-1-1-professions-wrapper">
+                                                            <label class="form-label text-sm">Professions</label>
+                                                            <div class="selected-professions-container flex flex-wrap gap-2 items-center mb-2">
+                                                            </div>
+                                                            <div class="professions-selector form-input text-sm cursor-pointer flex justify-between items-center">
+                                                                <span class="professions-placeholder text-gray-500 dark:text-gray-400">Select professions</span>
+                                                                <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400 transition-transform"></i>
+                                                            </div>
+                                                            <div class="professions-dropdown absolute bottom-full mb-2 w-full bg-white dark:bg-[#1f2937] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 hidden flex flex-col">
+                                                                <div class="p-2 border-b border-gray-200 dark:border-gray-600">
+                                                                    <input type="text" class="profession-search-input form-input text-sm !py-2" placeholder="Search or add new profession...">
+                                                                </div>
+                                                                <div class="professions-list max-h-60 overflow-y-auto p-2">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                         <div>
                                                             <label for="lesson-1-1-desc" class="form-label text-sm">Lesson Description</label>
-                                                            <textarea id="lesson-1-1-desc" rows="5" class="form-textarea text-sm" placeholder="Short description of the lesson's topic..."></textarea>
+                                                            <textarea id="lesson-1-1-desc" rows="4" class="form-textarea text-sm" placeholder="Short description of the lesson's topic..."></textarea>
                                                         </div>
                                                     </div>
-                                                    <div class="col-span-10 lg:col-span-3">
-                                                        <label class="form-label text-sm">Lesson Image</label>
-                                                        <div class="file-upload-box flex-grow flex flex-col justify-center items-center p-4">
-                                                            <i data-lucide="image-up" class="w-10 h-10 mx-auto text-gray-400"></i>
-                                                            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Click to upload</p>
-                                                            <p class="text-xs text-gray-500">PNG, JPG</p>
+                                                    <div class="col-span-10 lg:col-span-3 space-y-4"> <div> <label class="form-label text-sm">Lesson Image</label>
+                                                            <div class="file-upload-box flex-grow flex flex-col justify-center items-center p-4">
+                                                                <i data-lucide="image-up" class="w-10 h-10 mx-auto text-gray-400"></i>
+                                                                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Click to upload</p>
+                                                                <p class="text-xs text-gray-500">PNG, JPG</p>
+                                                            </div>
+                                                            <div class="flex items-center my-2">
+                                                                <hr class="flex-grow border-gray-200 dark:border-gray-600">
+                                                                <span class="mx-2 text-xs text-gray-400 dark:text-gray-500">OR</span>
+                                                                <hr class="flex-grow border-gray-200 dark:border-gray-600">
+                                                            </div>
+                                                            <input type="text" class="form-input text-sm" placeholder="Paste image URL...">
                                                         </div>
-                                                        <div class="flex items-center my-2">
-                                                            <hr class="flex-grow border-gray-200 dark:border-gray-600">
-                                                            <span class="mx-2 text-xs text-gray-400 dark:text-gray-500">OR</span>
-                                                            <hr class="flex-grow border-gray-200 dark:border-gray-600">
+
+                                                        <div class="relative custom-dropdown-wrapper" id="lesson-1-1-status-wrapper">
+                                                            <label class="form-label text-sm">Status</label>
+                                                            <button type="button" class="custom-dropdown-toggle text-sm">
+                                                                <span class="custom-dropdown-display capitalize">Draft</span>
+                                                                <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400 transition-transform"></i>
+                                                            </button>
+                                                            <div class="custom-dropdown-menu absolute mt-2 w-full bg-white dark:bg-[#1f2937] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 hidden">
+                                                                <div class="p-2">
+                                                                    <button type="button" class="dropdown-item text-sm selected" data-value="draft">
+                                                                        <span>Draft</span>
+                                                                    </button>
+                                                                    <button type="button" class="dropdown-item text-sm" data-value="published">
+                                                                        <span>Published</span>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <input type="text" class="form-input text-sm" placeholder="Paste image URL...">
+                                                        <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                                                            <label class="form-label text-sm">Lesson Materials</label>
+                                                            <div class="lesson-materials-container space-y-4 min-h-[20px]"> </div>
+                                                            <button type="button" class="add-lesson-material-btn btn btn-outline btn-sm w-full mt-3">
+                                                                <i data-lucide="plus" class="w-4 h-4"></i> Add Material
+                                                            </button>
+                                                        </div>
+                                                        <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                                                            <label class="form-label text-sm">Lesson Practice</label>
+                                                            <div class="lesson-practice-container space-y-4 min-h-[20px]"> </div>
+                                                            <button type="button" class="add-lesson-practice-btn btn btn-outline btn-sm w-full mt-3">
+                                                                <i data-lucide="plus" class="w-4 h-4"></i> Add Practice Link
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                     <div class="col-span-10 mt-4">
                                                         <div id="content-type-wrapper">
@@ -588,8 +787,7 @@
                                                                     <div class="content-type-card" data-type="memory"><div class="flex items-start gap-3"><i data-lucide="puzzle" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Memory Game</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Matching pairs memory game.</p></div></div></div>
                                                                     <div class="content-type-card" data-type="tag-cloud"><div class="flex items-start gap-3"><i data-lucide="cloud" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Tag Cloud</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive word cloud with definitions.</p></div></div></div>
                                                                     <div class="content-type-card" data-type="role-play"><div class="flex items-start gap-3"><i data-lucide="message-square" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Role Play Game</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive dialogue scenarios.</p></div></div></div>
-                                                                    <div class="content-type-card" data-type="test"><div class="flex items-start gap-3"><i data-lucide="clipboard-check" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Test</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Assess understanding with questions.</p></div></div></div>
-                                                                </div>
+                                                                    </div>
                                                             </div>
                                                             <div id="content-editor-container" class="hidden mt-4">
                                                                 <div id="presentation-editor" class="hidden">
@@ -607,98 +805,6 @@
                                                                 <div id="markdown-editor" class="hidden">
                                                                     <textarea rows="8" class="form-textarea" placeholder="Write your markdown content here..."></textarea>
                                                                 </div>
-                                                                <div id="test-editor" class="hidden">
-                                                                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 space-y-6">
-                                                                         <h3 class="text-xl font-semibold border-b border-gray-200 dark:border-gray-600 pb-3 mb-4">Test Details</h3>
-                                                                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                                             <div>
-                                                                                <label for="test-name" class="form-label">Test Name</label>
-                                                                                <input type="text" id="test-name" class="form-input" placeholder="e.g., Module 1 Check">
-                                                                             </div>
-                                                                             <div>
-                                                                                <label for="test-time-limit" class="form-label">Time Limit (minutes)</label>
-                                                                                <input type="number" id="test-time-limit" class="form-input" placeholder="e.g., 30">
-                                                                             </div>
-                                                                             <div>
-                                                                                <label for="test-passing-score" class="form-label">Passing Score (%)</label>
-                                                                                <input type="number" id="test-passing-score" class="form-input" placeholder="e.g., 70" min="0" max="100">
-                                                                             </div>
-                                                                         </div>
-                                                                         <div>
-                                                                            <label for="test-description" class="form-label">Test Description</label>
-                                                                            <textarea id="test-description" rows="3" class="form-textarea" placeholder="Optional instructions or description for the test..."></textarea>
-                                                                         </div>
-
-                                                                         <h3 class="text-xl font-semibold border-b border-gray-200 dark:border-gray-600 pb-3 my-6">Questions</h3>
-
-                                                                         <div id="test-questions-container" class="space-y-6">
-                                                                             <div class="question-block bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-                                                                                  <div>
-                                                                                     <label class="form-label text-sm">Question Text</label>
-                                                                                     <textarea rows="3" class="form-textarea text-sm question-text" placeholder="Enter the question here..."></textarea>
-                                                                                  </div>
-                                                                                  <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mt-4">
-                                                                                      <div class="md:col-span-3 relative answer-type-dropdown-wrapper">
-                                                                                         <label class="form-label text-sm">Answer Type</label>
-                                                                                         <button type="button" class="custom-dropdown-toggle text-sm answer-type-toggle">
-                                                                                             <span class="answer-type-display">Single Correct Answer</span>
-                                                                                             <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400 transition-transform"></i>
-                                                                                         </button>
-                                                                                         <div class="answer-type-menu absolute mt-2 w-full bg-white dark:bg-[#1f2937] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 hidden">
-                                                                                             <div class="p-2">
-                                                                                                 <button type="button" class="answer-type-item dropdown-item text-sm selected" data-value="single">Single Correct Answer</button>
-                                                                                                 <button type="button" class="answer-type-item dropdown-item text-sm" data-value="multiple">Multiple Correct Answers</button>
-                                                                                                 <button type="button" class="answer-type-item dropdown-item text-sm" data-value="truefalse">True/False</button>
-                                                                                             </div>
-                                                                                         </div>
-                                                                                      </div>
-                                                                                      <div class="md:col-span-2">
-                                                                                         <label class="form-label text-sm">Points</label>
-                                                                                         <input type="number" class="form-input text-sm question-points" placeholder="e.g., 10" min="1" value="10">
-                                                                                      </div>
-                                                                                  </div>
-
-                                                                                  <div class="mt-4">
-                                                                                      <label class="form-label text-sm mb-2">Answers</label>
-                                                                                      <div class="test-answers-container space-y-2">
-                                                                                          <div class="answer-row flex items-center gap-2">
-                                                                                              <input type="radio" name="correct_answer_q1" class="answer-marker form-radio">
-                                                                                              <input type="text" class="form-input text-sm flex-grow" placeholder="Answer option 1">
-                                                                                              <button type="button" class="btn-icon-sm delete-answer-btn">
-                                                                                                  <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
-                                                                                              </button>
-                                                                                          </div>
-                                                                                           <div class="answer-row flex items-center gap-2">
-                                                                                              <input type="radio" name="correct_answer_q1" class="answer-marker form-radio">
-                                                                                              <input type="text" class="form-input text-sm flex-grow" placeholder="Answer option 2">
-                                                                                              <button type="button" class="btn-icon-sm delete-answer-btn">
-                                                                                                  <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
-                                                                                              </button>
-                                                                                          </div>
-                                                                                           <div class="answer-row flex items-center gap-2">
-                                                                                              <input type="radio" name="correct_answer_q1" class="answer-marker form-radio">
-                                                                                              <input type="text" class="form-input text-sm flex-grow" placeholder="Answer option 3">
-                                                                                              <button type="button" class="btn-icon-sm delete-answer-btn">
-                                                                                                  <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
-                                                                                              </button>
-                                                                                          </div>
-                                                                                      </div>
-                                                                                      <div class="mt-2 text-right">
-                                                                                         <button type="button" class="btn btn-outline btn-sm add-answer-btn">
-                                                                                              <i data-lucide="plus" class="w-4 h-4"></i> Add Answer
-                                                                                          </button>
-                                                                                      </div>
-                                                                                  </div>
-                                                                             </div>
-                                                                             </div>
-
-                                                                         <div class="mt-6">
-                                                                              <button type="button" id="add-question-btn" class="btn btn-outline">
-                                                                                  <i data-lucide="plus" class="w-5 h-5"></i> Add Question
-                                                                              </button>
-                                                                         </div>
-                                                                    </div>
-                                                                </div>
                                                                  <div class="mt-4 text-right">
                                                                     <button type="button" class="preview-content-btn btn btn-primary btn-sm hidden">Preview Content</button>
                                                                 </div>
@@ -710,12 +816,94 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                         <div class="module-test-container hidden mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
+                                             <div id="test-editor" class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 space-y-6">
+                                                   <h3 class="text-xl font-semibold border-b border-gray-200 dark:border-gray-600 pb-3 mb-4">Test Details</h3>
+                                                   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                       <div>
+                                                          <label for="test-name-m1" class="form-label">Test Name</label> <input type="text" id="test-name-m1" class="form-input" placeholder="e.g., Module 1 Check">
+                                                       </div>
+                                                       <div>
+                                                          <label for="test-time-limit-m1" class="form-label">Time Limit (minutes)</label> <input type="number" id="test-time-limit-m1" class="form-input" placeholder="e.g., 30">
+                                                       </div>
+                                                       <div>
+                                                          <label for="test-passing-score-m1" class="form-label">Passing Score (%)</label> <input type="number" id="test-passing-score-m1" class="form-input" placeholder="e.g., 70" min="0" max="100">
+                                                       </div>
+                                                   </div>
+                                                   <div>
+                                                      <label for="test-description-m1" class="form-label">Test Description</label> <textarea id="test-description-m1" rows="3" class="form-textarea" placeholder="Optional instructions or description for the test..."></textarea>
+                                                   </div>
+
+                                                   <h3 class="text-xl font-semibold border-b border-gray-200 dark:border-gray-600 pb-3 my-6">Questions</h3>
+
+                                                   <div class="test-questions-container space-y-6"> <div class="question-block bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                                            <div>
+                                                               <label class="form-label text-sm">Question Text</label>
+                                                               <textarea rows="3" class="form-textarea text-sm question-text" placeholder="Enter the question here..."></textarea>
+                                                            </div>
+                                                            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mt-4">
+                                                                <div class="md:col-span-3 relative answer-type-dropdown-wrapper">
+                                                                   <label class="form-label text-sm">Answer Type</label>
+                                                                   <button type="button" class="custom-dropdown-toggle text-sm answer-type-toggle">
+                                                                       <span class="answer-type-display">Single Correct Answer</span>
+                                                                       <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400 transition-transform"></i>
+                                                                   </button>
+                                                                   <div class="answer-type-menu absolute mt-2 w-full bg-white dark:bg-[#1f2937] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 hidden">
+                                                                       <div class="p-2">
+                                                                           <button type="button" class="answer-type-item dropdown-item text-sm selected" data-value="single">Single Correct Answer</button>
+                                                                           <button type="button" class="answer-type-item dropdown-item text-sm" data-value="multiple">Multiple Correct Answers</button>
+                                                                           <button type="button" class="answer-type-item dropdown-item text-sm" data-value="truefalse">True/False</button>
+                                                                       </div>
+                                                                   </div>
+                                                                </div>
+                                                                <div class="md:col-span-2">
+                                                                   <label class="form-label text-sm">Points</label>
+                                                                   <input type="number" class="form-input text-sm question-points" placeholder="e.g., 10" min="1" value="10">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="mt-4">
+                                                                <label class="form-label text-sm mb-2">Answers</label>
+                                                                <div class="test-answers-container space-y-2"> <div class="answer-row flex items-center gap-2">
+                                                                        <input type="radio" name="correct_answer_q1_m1" class="answer-marker form-radio"> <input type="text" class="form-input text-sm flex-grow" placeholder="Answer option 1">
+                                                                        <button type="button" class="btn-icon-sm delete-answer-btn">
+                                                                            <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                     <div class="answer-row flex items-center gap-2">
+                                                                        <input type="radio" name="correct_answer_q1_m1" class="answer-marker form-radio"> <input type="text" class="form-input text-sm flex-grow" placeholder="Answer option 2">
+                                                                        <button type="button" class="btn-icon-sm delete-answer-btn">
+                                                                            <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                     <div class="answer-row flex items-center gap-2">
+                                                                        <input type="radio" name="correct_answer_q1_m1" class="answer-marker form-radio"> <input type="text" class="form-input text-sm flex-grow" placeholder="Answer option 3">
+                                                                        <button type="button" class="btn-icon-sm delete-answer-btn">
+                                                                            <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="mt-2 text-right">
+                                                                   <button type="button" class="btn btn-outline btn-sm add-answer-btn">
+                                                                        <i data-lucide="plus" class="w-4 h-4"></i> Add Answer
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                       </div>
+                                                       </div>
+
+                                                   <div class="mt-6">
+                                                        <button type="button" class="btn btn-outline add-question-btn"> <i data-lucide="plus" class="w-5 h-5"></i> Add Question
+                                                        </button>
+                                                   </div>
+                                              </div>
+                                        </div>
+                                        </div>
                                 </div>
                             </div>
                         </div>
                     </section>
-                    
+
                     <div class="flex justify-end mt-10">
                         <button type="submit" class="btn btn-primary">
                             <i data-lucide="save" class="w-5 h-5"></i>
@@ -747,6 +935,10 @@
                 }
                 accordions.forEach(button => {
                     button.addEventListener('click', (e) => {
+                        // Не закривати акордеон при кліку на інпут всередині
+                        if (e.target.closest('input') || e.target.closest('label')) {
+                            return;
+                        }
                         e.preventDefault();
                         const content = button.nextElementSibling;
                         const icon = button.querySelector('.accordion-icon');
@@ -755,10 +947,12 @@
                     });
                 });
             })();
-            
+
+            // ===== ЗМІНЕНО: setupToolsInput -> setupSkillsInput =====
             (function setupSkillsInput() {
                 const skillsInput = document.getElementById('skills-input');
                 const selectedContainer = document.getElementById('selected-skills-container');
+                if (!skillsInput || !selectedContainer) return; // Захист
                 let selectedSkills = [];
 
                 skillsInput.addEventListener('keydown', (e) => {
@@ -777,7 +971,7 @@
                     selectedContainer.innerHTML = '';
                     selectedSkills.forEach(skill => {
                         const tagEl = document.createElement('span');
-                        tagEl.className = 'skill-tag capitalize';
+                        tagEl.className = 'skill-tag capitalize'; // Використовує .skill-tag
                         tagEl.innerHTML = `<span>${skill}</span> <i data-lucide="x" class="remove-tag-btn" data-skill-to-remove="${skill}"></i>`;
                         selectedContainer.appendChild(tagEl);
                     });
@@ -793,90 +987,281 @@
                     }
                 });
             })();
+            // ===== END ЗМІНИ =====
 
-            (function setupStatusDropdown() {
-                const wrapper = document.getElementById('status-container-wrapper');
-                if (!wrapper) return;
 
-                const statusSelector = document.getElementById('status-selector');
-                const statusDropdown = document.getElementById('status-dropdown');
-                const statusDisplay = document.getElementById('status-display');
-                const icon = statusSelector.querySelector('i');
-                let currentStatus = 'draft';
+            // ===== Універсальна функція для Dropdown =====
+            function initCustomDropdown(wrapperElementOrId) {
+                const wrapper = typeof wrapperElementOrId === 'string'
+                    ? document.getElementById(wrapperElementOrId)
+                    : wrapperElementOrId;
 
-                function updateItemStyles() {
-                    statusDropdown.querySelectorAll('.status-item').forEach(item => {
-                        item.classList.remove('selected'); // Remove selected from all
-                        if (item.dataset.status === currentStatus) {
-                            item.classList.add('selected'); // Add selected to current
-                        }
-                    });
-                    // Update button text
-                    const selectedItem = statusDropdown.querySelector('.status-item.selected');
-                    if(selectedItem) statusDisplay.textContent = selectedItem.textContent.trim();
+                if (!wrapper) { console.warn("Dropdown wrapper not found:", wrapperElementOrId); return null; } // Покращена перевірка
 
+                const toggle = wrapper.querySelector('.custom-dropdown-toggle');
+                const menu = wrapper.querySelector('.custom-dropdown-menu');
+                const display = wrapper.querySelector('.custom-dropdown-display');
+                const icon = toggle.querySelector('i[data-lucide="chevron-down"]');
+
+                if (!toggle || !menu || !display || !icon) { // Додаткова перевірка
+                     console.error("Missing elements within dropdown wrapper:", wrapperElementOrId);
+                     return null;
                 }
 
-                statusSelector.addEventListener('click', (e) => {
+                let currentValue = menu.querySelector('.dropdown-item.selected')?.dataset.value || '';
+
+                function updateItemStyles() {
+                    menu.querySelectorAll('.dropdown-item').forEach(item => {
+                        item.classList.remove('selected');
+                        if (item.dataset.value === currentValue) {
+                            item.classList.add('selected');
+                        }
+                    });
+                    const selectedItem = menu.querySelector('.dropdown-item.selected');
+                    if(selectedItem) display.textContent = selectedItem.textContent.trim();
+                }
+
+                toggle.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    statusDropdown.classList.toggle('hidden');
+                    // Закрити всі інші дропдауни
+                    document.querySelectorAll('.custom-dropdown-wrapper').forEach(otherWrapper => {
+                        if (otherWrapper !== wrapper) {
+                            otherWrapper.querySelector('.custom-dropdown-menu')?.classList.add('hidden');
+                            otherWrapper.querySelector('.custom-dropdown-toggle i[data-lucide="chevron-down"]')?.classList.remove('-rotate-180');
+                        }
+                    });
+                    menu.classList.toggle('hidden');
                     icon.classList.toggle('-rotate-180');
                 });
 
-                statusDropdown.addEventListener('click', (e) => {
-                    const item = e.target.closest('.status-item');
+                menu.addEventListener('click', (e) => {
+                    const item = e.target.closest('.dropdown-item');
                     if (item) {
-                        currentStatus = item.dataset.status;
-                        // statusDisplay.textContent = item.textContent.trim(); // Moved to updateItemStyles
-                        statusDropdown.classList.add('hidden');
+                        currentValue = item.dataset.value;
+                        menu.classList.add('hidden');
                         icon.classList.remove('-rotate-180');
                         updateItemStyles();
                     }
                 });
 
-                window.addEventListener('click', (e) => {
-                    if (wrapper && !wrapper.contains(e.target)) { // Check if wrapper exists
-                        statusDropdown.classList.add('hidden');
-                        icon.classList.remove('-rotate-180');
+                updateItemStyles(); // Ініціалізація
+                return wrapper; // Повертаємо для window click listener
+            }
+
+            // Ініціалізуємо всі дропдауни
+            const dropdownWrappers = [
+                initCustomDropdown('course-status-wrapper'),
+                initCustomDropdown('course-difficulty-wrapper'),
+                initCustomDropdown('module-1-status-wrapper'),
+                initCustomDropdown('lesson-1-1-type-wrapper'),
+                initCustomDropdown('lesson-1-1-status-wrapper')
+            ].filter(Boolean); // Фільтруємо null, якщо елемент не знайдено
+            // ===== END ЗМІНИ =====
+
+
+            // ===== Універсальна функція для Professions =====
+            function initProfessionsDropdown(wrapperElementOrId) {
+                const wrapper = typeof wrapperElementOrId === 'string'
+                    ? document.getElementById(wrapperElementOrId)
+                    : wrapperElementOrId;
+
+                if (!wrapper) { console.warn("Professions wrapper not found:", wrapperElementOrId); return null; } // Покращена перевірка
+
+                // Використовуємо класи для пошуку елементів всередині wrapper
+                const professionsSelector = wrapper.querySelector('.professions-selector');
+                const professionsDropdown = wrapper.querySelector('.professions-dropdown');
+                const professionsList = wrapper.querySelector('.professions-list');
+                const searchInput = wrapper.querySelector('.profession-search-input');
+                const placeholder = wrapper.querySelector('.professions-placeholder');
+                const selectedContainer = wrapper.querySelector('.selected-professions-container');
+
+                if (!professionsSelector || !professionsDropdown || !professionsList || !searchInput || !placeholder || !selectedContainer) { // Додаткова перевірка
+                     console.error("Missing elements within professions wrapper:", wrapperElementOrId);
+                     return null;
+                }
+
+                // Дані (можна винести назовні, якщо вони однакові для всіх)
+                const professionsData = { 'designers': ['3d designer', 'Graphic designer', 'Illustrator', 'Interior designer', 'Motion designer', 'UI UX designer', 'Web designer', 'Wordpress designer', 'Vizualizer'], 'developers': ['Back end developer', 'Full stack developer', 'Front end developer', 'Mobile developer', 'QA', 'System administrator', 'Prompt engineer'], 'managers': ['Account manager', 'Content manager', 'Event manager', 'Financial manager', 'HR manager', 'Investment manager', 'Influencer manager', 'Product manager', 'Project manager', 'PR manager', 'Sales manager', 'SEO manager', 'Social media manager', 'beginner'], 'marketers': ['Affiliate manager', 'Copywriter', 'Email marketer', 'Lead generator', 'Linkbuilder', 'Media buyer', 'PPC specialist', 'Targetologist'], 'videographers': ['Mobile video editor', 'Video editor'], 'other': ['Analyst', 'Chat operator', 'Personal assistant', 'Proofreader', 'Recruiter', 'Translator', 'Tourism manager'] };
+                const allProfessions = [...new Set(Object.values(professionsData).flat())].sort((a, b) => a.localeCompare(b));
+                const syncedProfessions = ['3d designer', 'Graphic designer', 'UI UX designer', 'Back end developer'];
+
+                let selectedProfessions = [];
+
+                const populateProfessionsList = () => { professionsList.innerHTML = ''; allProfessions.forEach(prof => { const item = document.createElement('div'); item.className = 'profession-item dropdown-item capitalize'; item.dataset.profession = prof; item.innerHTML = `<div class="custom-checkbox"></div><span>${prof}</span>`; professionsList.appendChild(item); }); };
+
+                const updateSelectedProfessionsUI = () => {
+                    selectedContainer.innerHTML = '';
+                    if (selectedProfessions.length > 0) {
+                        placeholder.classList.add('hidden');
+                        selectedProfessions.forEach(prof => {
+                            const tagEl = document.createElement('span');
+                            tagEl.className = 'profession-tag-base capitalize';
+                            if (syncedProfessions.includes(prof)) {
+                                tagEl.classList.add('synced-tag'); // Blue
+                            } else {
+                                tagEl.classList.add('manual-tag'); // Yellow
+                            }
+                            tagEl.innerHTML = `<span>${prof}</span> <i data-lucide="x" class="remove-tag-btn w-4 h-4" data-profession-to-remove="${prof}"></i>`;
+                            selectedContainer.appendChild(tagEl);
+                        });
+                        lucide.createIcons();
+                    } else {
+                        placeholder.classList.remove('hidden');
+                    }
+                };
+
+                const updateListItemStyles = () => { professionsList.querySelectorAll('.profession-item').forEach(item => { if (selectedProfessions.includes(item.dataset.profession)) { item.classList.add('selected'); } else { item.classList.remove('selected'); } }); };
+
+                professionsSelector.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // Закрити всі інші дропдауни професій
+                    document.querySelectorAll('.professions-container-wrapper').forEach(otherWrapper => {
+                        if (otherWrapper !== wrapper) {
+                            otherWrapper.querySelector('.professions-dropdown')?.classList.add('hidden');
+                            otherWrapper.querySelector('.professions-selector i[data-lucide="chevron-down"]')?.classList.remove('-rotate-180');
+                        }
+                    });
+
+                    const icon = professionsSelector.querySelector('i');
+                    professionsDropdown.classList.toggle('hidden');
+                    icon.classList.toggle('-rotate-180');
+                    if (!professionsDropdown.classList.contains('hidden')) { searchInput.focus(); }
+                });
+                professionsList.addEventListener('click', (e) => { const item = e.target.closest('.profession-item'); if (item) { const profession = item.dataset.profession; if (selectedProfessions.includes(profession)) { selectedProfessions = selectedProfessions.filter(p => p !== profession); } else { selectedProfessions.push(profession); } updateSelectedProfessionsUI(); updateListItemStyles(); } });
+                selectedContainer.addEventListener('click', (e) => { const removeBtn = e.target.closest('.remove-tag-btn'); if (removeBtn) { e.stopPropagation(); const professionToRemove = removeBtn.dataset.professionToRemove; selectedProfessions = selectedProfessions.filter(p => p !== professionToRemove); updateSelectedProfessionsUI(); updateListItemStyles(); } });
+
+                searchInput.addEventListener('input', () => { const filter = searchInput.value.toLowerCase(); professionsList.querySelectorAll('.profession-item').forEach(item => { if (item.textContent.toLowerCase().includes(filter)) { item.style.display = 'flex'; } else { item.style.display = 'none'; } }); });
+
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const newProf = searchInput.value.trim().toLowerCase();
+                        if (newProf && !selectedProfessions.includes(newProf)) {
+                            selectedProfessions.push(newProf);
+                            if (!allProfessions.includes(newProf)) {
+                                allProfessions.push(newProf);
+                                allProfessions.sort((a, b) => a.localeCompare(b));
+                                populateProfessionsList();
+                            }
+                             updateSelectedProfessionsUI();
+                             updateListItemStyles();
+                             searchInput.value = '';
+                             searchInput.dispatchEvent(new Event('input'));
+                        }
                     }
                 });
 
-                updateItemStyles(); // Set initial selected style and text
-            })();
-
-
-            (function setupProfessionsDropdown() {
-                const professionsData = { 'designers': ['3d designer', 'Graphic designer', 'Illustrator', 'Interior designer', 'Motion designer', 'UI UX designer', 'Web designer', 'Wordpress designer', 'Vizualizer'], 'developers': ['Back end developer', 'Full stack developer', 'Front end developer', 'Mobile developer', 'QA', 'System administrator', 'Prompt engineer'], 'managers': ['Account manager', 'Content manager', 'Event manager', 'Financial manager', 'HR manager', 'Investment manager', 'Influencer manager', 'Product manager', 'Project manager', 'PR manager', 'Sales manager', 'SEO manager', 'Social media manager', 'beginner'], 'marketers': ['Affiliate manager', 'Copywriter', 'Email marketer', 'Lead generator', 'Linkbuilder', 'Media buyer', 'PPC specialist', 'Targetologist'], 'videographers': ['Mobile video editor', 'Video editor'], 'other': ['Analyst', 'Chat operator', 'Personal assistant', 'Proofreader', 'Recruiter', 'Translator', 'Tourism manager'] };
-                const allProfessions = [...new Set(Object.values(professionsData).flat())].sort((a, b) => a.localeCompare(b));
-                let selectedProfessions = [];
-                const professionsSelector = document.getElementById('professions-selector');
-                const professionsDropdown = document.getElementById('professions-dropdown');
-                const professionsList = document.getElementById('professions-list');
-                const searchInput = document.getElementById('profession-search-input');
-                const professionsContainerWrapper = document.getElementById('professions-container-wrapper');
-                const placeholder = document.getElementById('professions-placeholder');
-                
-                const populateProfessionsList = () => { professionsList.innerHTML = ''; allProfessions.forEach(prof => { const item = document.createElement('div'); item.className = 'profession-item dropdown-item capitalize'; item.dataset.profession = prof; item.innerHTML = `<div class="custom-checkbox"></div><span>${prof}</span>`; professionsList.appendChild(item); }); };
-                const updateSelectedProfessionsUI = () => { const container = document.getElementById('selected-professions-container'); container.innerHTML = ''; if (selectedProfessions.length > 0) { placeholder.classList.add('hidden'); selectedProfessions.forEach(prof => { const tagEl = document.createElement('span'); tagEl.className = 'selected-profession-tag capitalize'; tagEl.innerHTML = `<span>${prof}</span> <i data-lucide="x" class="remove-tag-btn w-4 h-4" data-profession-to-remove="${prof}"></i>`; container.appendChild(tagEl); }); lucide.createIcons(); } else { placeholder.classList.remove('hidden'); } };
-                const updateListItemStyles = () => { professionsList.querySelectorAll('.profession-item').forEach(item => { if (selectedProfessions.includes(item.dataset.profession)) { item.classList.add('selected'); } else { item.classList.remove('selected'); } }); };
-
-                professionsSelector.addEventListener('click', (e) => { e.stopPropagation(); const icon = professionsSelector.querySelector('i'); professionsDropdown.classList.toggle('hidden'); icon.classList.toggle('-rotate-180'); if (!professionsDropdown.classList.contains('hidden')) { searchInput.focus(); } });
-                professionsList.addEventListener('click', (e) => { const item = e.target.closest('.profession-item'); if (item) { const profession = item.dataset.profession; if (selectedProfessions.includes(profession)) { selectedProfessions = selectedProfessions.filter(p => p !== profession); } else { selectedProfessions.push(profession); } updateSelectedProfessionsUI(); updateListItemStyles(); } });
-                document.getElementById('selected-professions-container').addEventListener('click', (e) => { const removeBtn = e.target.closest('.remove-tag-btn'); if (removeBtn) { e.stopPropagation(); const professionToRemove = removeBtn.dataset.professionToRemove; selectedProfessions = selectedProfessions.filter(p => p !== professionToRemove); updateSelectedProfessionsUI(); updateListItemStyles(); } });
-                searchInput.addEventListener('input', () => { const filter = searchInput.value.toLowerCase(); professionsList.querySelectorAll('.profession-item').forEach(item => { if (item.textContent.toLowerCase().includes(filter)) { item.style.display = 'flex'; } else { item.style.display = 'none'; } }); });
-                window.addEventListener('click', (e) => { if (professionsContainerWrapper && !professionsContainerWrapper.contains(e.target)) { professionsDropdown.classList.add('hidden'); professionsSelector.querySelector('i').classList.remove('-rotate-180'); } });
                 populateProfessionsList();
+                return wrapper; // Повертаємо для window click listener
+            }
+
+            // Ініціалізуємо всі селектори професій
+            const professionWrappers = [
+                initProfessionsDropdown('course-professions-wrapper'),
+                initProfessionsDropdown('lesson-1-1-professions-wrapper')
+            ].filter(Boolean);
+            // ===== END ЗМІНИ =====
+
+
+            // ===== ЗМІНЕНО: setupMaterials (поля одне під одним) =====
+            (function setupMaterials() {
+                const addBtn = document.getElementById('add-material-btn');
+                const container = document.getElementById('materials-container');
+                if (!addBtn || !container) return;
+
+                function createMaterialRow() {
+                    const rowWrapper = document.createElement('div');
+                    // Додаємо space-y-2 до батьківського елемента та кнопку видалення
+                    rowWrapper.className = 'p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700 space-y-2 relative';
+                    rowWrapper.innerHTML = `
+                        <button type="button" class="btn-icon-sm delete-material-btn absolute top-2 right-2">
+                            <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                        </button>
+                        <div>
+                           <label class="form-label text-xs">Material Name</label>
+                           <input type="text" class="form-input text-sm !py-2" placeholder="e.g., Cheatsheet.pdf">
+                        </div>
+                        <div>
+                           <label class="form-label text-xs">Material URL</label>
+                           <input type="text" class="form-input text-sm !py-2" placeholder="Paste URL...">
+                        </div>
+                    `;
+                    rowWrapper.querySelector('.delete-material-btn').addEventListener('click', () => {
+                        rowWrapper.remove();
+                    });
+                    return rowWrapper;
+                }
+
+                addBtn.addEventListener('click', () => {
+                    container.appendChild(createMaterialRow());
+                    lucide.createIcons();
+                });
             })();
+            // ===== END ЗМІНИ =====
+
+            // ===== ДОДАНО: setupLessonMaterials / setupLessonPractice =====
+            function setupDynamicList(addButtonSelector, containerSelector, namePlaceholder, urlPlaceholder, labelPrefix) {
+                 // Знаходимо кнопки та контейнери відносно батьківського блоку уроку
+                 document.querySelectorAll('.accordion-content').forEach(moduleContent => {
+                     const lessonBlocks = moduleContent.querySelectorAll('.bg-\\[\\#f7fafc\\]'); // Знаходимо блоки уроків
+                     lessonBlocks.forEach(lessonBlock => {
+                         const addBtn = lessonBlock.querySelector(addButtonSelector);
+                         const container = lessonBlock.querySelector(containerSelector);
+
+                         if (!addBtn || !container) {
+                             // console.warn(`Could not find elements for: ${addButtonSelector} or ${containerSelector} in a lesson block`);
+                             return; // Пропускаємо, якщо не знайдено
+                         }
+
+                        function createRow() {
+                            const rowWrapper = document.createElement('div');
+                            rowWrapper.className = 'p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700 space-y-2 relative';
+                            rowWrapper.innerHTML = `
+                                <button type="button" class="btn-icon-sm delete-dynamic-row-btn absolute top-2 right-2">
+                                    <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                </button>
+                                <div>
+                                   <label class="form-label text-xs">${labelPrefix} Name</label>
+                                   <input type="text" class="form-input text-sm !py-2" placeholder="${namePlaceholder}">
+                                </div>
+                                <div>
+                                   <label class="form-label text-xs">${labelPrefix} URL</label>
+                                   <input type="text" class="form-input text-sm !py-2" placeholder="${urlPlaceholder}">
+                                </div>
+                            `;
+                            rowWrapper.querySelector('.delete-dynamic-row-btn').addEventListener('click', () => {
+                                rowWrapper.remove();
+                            });
+                            return rowWrapper;
+                        }
+
+                        addBtn.addEventListener('click', () => {
+                            container.appendChild(createRow());
+                            lucide.createIcons();
+                        });
+                     });
+                 });
+            }
+
+            setupDynamicList('.add-lesson-material-btn', '.lesson-materials-container', 'e.g., Presentation.pdf', 'Paste URL...', 'Material');
+            setupDynamicList('.add-lesson-practice-btn', '.lesson-practice-container', 'e.g., Figma Exercise', 'Paste URL...', 'Practice');
+            // ===== END ЗМІНИ =====
+
 
             (function setupHeroPreview() {
                 const previewBtn = document.getElementById('preview-hero-btn');
                 const previewContainer = document.getElementById('hero-preview-container');
+                if (!previewBtn || !previewContainer) return;
+
                 previewBtn.addEventListener('click', () => {
                     const isHidden = previewContainer.classList.contains('hidden');
                     if (isHidden) {
                         const title = document.getElementById('course-name').value || "Dropbox Fundamentals";
                         const description = document.getElementById('course-description').value || "A comprehensive guide to mastering Dropbox fundamentals—learn to securely back up files, access them from any device, sync effortlessly, and share with confidence. Perfect for beginners looking to organize their digital life.";
-                        const selectedProfessionsNodeList = document.querySelectorAll('.selected-profession-tag span');
+
+                        // Змінено селектор, щоб відповідати новим тегам професій
+                        const selectedProfessionsNodeList = document.querySelectorAll('#course-professions-wrapper .profession-tag-base span');
+
                         const selectedProfessions = Array.from(selectedProfessionsNodeList).map(span => span.textContent);
                         let professionsHtml = (selectedProfessions.length > 0 ? selectedProfessions : ['3d Designer', 'Account Manager', 'Analyst']).slice(0, 4).map(p => `<span class="bg-white/20 text-white/80 text-xs px-2 py-1 rounded-md capitalize">${p}</span>`).join('');
                         previewContainer.innerHTML = `
@@ -896,97 +1281,96 @@
                     }
                 });
             })();
-            
+
             (function setupModulePreview() {
-                const previewModuleBtn = document.getElementById('preview-module-btn');
-                const modulePreviewContainer = document.getElementById('module-preview-container');
-                if (previewModuleBtn && modulePreviewContainer) {
-                    previewModuleBtn.addEventListener('click', () => {
-                        const isHidden = modulePreviewContainer.classList.contains('hidden');
-                        const btnSpan = previewModuleBtn.querySelector('span');
-                        if (isHidden) {
-                            const moduleTitleInput = document.getElementById('module-1-name');
-                            const title = moduleTitleInput.value.trim() || "Installation and Setup";
-                            modulePreviewContainer.querySelectorAll('.preview-module-title-text').forEach(el => { el.textContent = title; });
-                            document.getElementById('preview-module-title').textContent = title;
-                            modulePreviewContainer.classList.remove('hidden');
-                            btnSpan.textContent = 'Close Preview';
-                        } else {
-                            modulePreviewContainer.classList.add('hidden');
-                            btnSpan.textContent = 'Preview Module';
-                        }
-                    });
-                    const activeCard = modulePreviewContainer.querySelector('.module-preview-card');
-                    const video = activeCard.querySelector('video');
-                    activeCard.addEventListener('mouseenter', () => video.play());
-                    activeCard.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
-                }
+                 document.querySelectorAll('.accordion-content').forEach(moduleContent => {
+                    const previewModuleBtn = moduleContent.querySelector('.preview-module-btn');
+                    const modulePreviewContainer = moduleContent.querySelector('.module-preview-container');
+                    const moduleTitleInput = moduleContent.querySelector('.module-title-input');
+                    const previewTitleElements = modulePreviewContainer?.querySelectorAll('.preview-module-title-text');
+                    const activePreviewTitle = modulePreviewContainer?.querySelector('.preview-module-title'); // Використовуємо клас
+                    const activeCard = modulePreviewContainer?.querySelector('.module-preview-card');
+                    const video = activeCard?.querySelector('video');
+
+                    if (previewModuleBtn && modulePreviewContainer && moduleTitleInput && previewTitleElements && activePreviewTitle && activeCard && video) {
+                        previewModuleBtn.addEventListener('click', () => {
+                            const isHidden = modulePreviewContainer.classList.contains('hidden');
+                            const btnSpan = previewModuleBtn.querySelector('span');
+                            if (isHidden) {
+                                const title = moduleTitleInput.value.trim() || moduleTitleInput.placeholder || "Untitled Module";
+                                previewTitleElements.forEach(el => { el.textContent = title; });
+                                activePreviewTitle.textContent = title;
+                                modulePreviewContainer.classList.remove('hidden');
+                                btnSpan.textContent = 'Close Preview';
+                            } else {
+                                modulePreviewContainer.classList.add('hidden');
+                                btnSpan.textContent = 'Preview Module';
+                            }
+                        });
+
+                        activeCard.addEventListener('mouseenter', () => video.play().catch(e => console.error("Video play failed:", e)));
+                        activeCard.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
+                    }
+                 });
             })();
 
-             (function setupModuleTitleSync() {
-                const modulesContainer = document.getElementById('modules-container');
-
-                function updateTitleDisplay(inputElement) {
-                    const targetSelector = inputElement.dataset.target;
-                    const accordionButton = inputElement.closest('.border').querySelector('.accordion-toggle');
-                    if (accordionButton) {
-                        const titleDisplay = accordionButton.querySelector(targetSelector);
-                        if (titleDisplay) {
-                            // Use placeholder if value is empty
-                            titleDisplay.textContent = inputElement.value || inputElement.placeholder || 'Untitled Module'; 
-                        }
-                    }
-                }
-
-                modulesContainer.querySelectorAll('.module-title-input').forEach(input => {
-                    updateTitleDisplay(input); // Set initial text based on value or placeholder
-                });
-
-                modulesContainer.addEventListener('input', (e) => {
-                    if (e.target.classList.contains('module-title-input')) {
-                        updateTitleDisplay(e.target);
-                    }
-                });
-            })();
 
             // --- CONTENT TYPE & EDITOR LOGIC ---
-            const contentTypeWrapper = document.getElementById('content-type-wrapper');
-            const contentTypeSelector = document.getElementById('content-type-selector');
-            const contentEditorContainer = document.getElementById('content-editor-container');
-            const contentPreviewContainer = document.getElementById('content-preview-container');
-            const previewContentButton = contentEditorContainer.querySelector('.preview-content-btn'); // Get the preview button
+            // Ініціалізація для кожного блоку уроку
+             document.querySelectorAll('.accordion-content').forEach(moduleContent => {
+                 const lessonBlocks = moduleContent.querySelectorAll('.bg-\\[\\#f7fafc\\]');
+                 lessonBlocks.forEach(lessonBlock => {
+                     const contentTypeWrapper = lessonBlock.querySelector('#content-type-wrapper'); // Використовуємо ID, якщо він унікальний В МЕЖАХ УРОКУ
+                     if (contentTypeWrapper) {
+                        const contentTypeSelector = contentTypeWrapper.querySelector('#content-type-selector');
+                        const contentEditorContainer = contentTypeWrapper.querySelector('#content-editor-container');
+                        const contentPreviewContainer = contentTypeWrapper.querySelector('#content-preview-container');
+                        const previewContentButton = contentEditorContainer?.querySelector('.preview-content-btn');
 
-            contentTypeSelector.querySelectorAll('.content-type-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    contentTypeSelector.querySelectorAll('.content-type-card').forEach(c => c.classList.remove('active'));
-                    card.classList.add('active');
-                    const type = card.dataset.type;
-                    
-                    // Show/hide preview button based on type
-                    if (type === 'test') {
-                        previewContentButton.classList.add('hidden');
-                    } else {
-                        previewContentButton.classList.remove('hidden');
-                    }
+                        if (contentTypeSelector && contentEditorContainer && contentPreviewContainer && previewContentButton) {
+                             contentTypeSelector.querySelectorAll('.content-type-card').forEach(card => {
+                                card.addEventListener('click', () => {
+                                    contentTypeSelector.querySelectorAll('.content-type-card').forEach(c => c.classList.remove('active'));
+                                    card.classList.add('active');
+                                    const type = card.dataset.type;
 
-                    contentEditorContainer.classList.remove('hidden');
-                    contentEditorContainer.querySelectorAll('[id$="-editor"]').forEach(editor => editor.classList.add('hidden'));
-                    
-                    const selectedEditor = document.getElementById(`${type}-editor`) || document.getElementById('markdown-editor'); // Default to markdown if specific not found
-                    if (selectedEditor) {
-                        selectedEditor.classList.remove('hidden');
-                    } else {
-                         console.warn(`Editor for type "${type}" not found.`);
-                    }
-                    
-                    contentPreviewContainer.classList.add('hidden');
-                    contentPreviewContainer.innerHTML = '';
-                });
-            });
+                                    previewContentButton.classList.remove('hidden'); // Завжди показуємо для не-тестових типів
+
+                                    contentEditorContainer.classList.remove('hidden');
+                                    contentEditorContainer.querySelectorAll('[id$="-editor"]').forEach(editor => editor.classList.add('hidden'));
+
+                                    // Шукаємо редактор В МЕЖАХ КОНТЕЙНЕРА РЕДАГУВАННЯ
+                                    const selectedEditor = contentEditorContainer.querySelector(`#${type}-editor`) || contentEditorContainer.querySelector('#markdown-editor');
+                                    if (selectedEditor) {
+                                        selectedEditor.classList.remove('hidden');
+                                    } else {
+                                        console.warn(`Editor for type "${type}" not found within lesson block.`);
+                                    }
+
+                                    contentPreviewContainer.classList.add('hidden');
+                                    contentPreviewContainer.innerHTML = '';
+                                });
+                            });
+
+                             // Preview Button Logic (тепер всередині ініціалізації)
+                             previewContentButton.addEventListener('click', () => {
+                                const activeEditor = contentEditorContainer.querySelector('[id$="-editor"]:not(.hidden)');
+                                if (activeEditor && activeEditor.id === 'presentation-editor') {
+                                    previewPresentation(contentEditorContainer); // Pass container
+                                } else if (activeEditor && activeEditor.id === 'markdown-editor') {
+                                    previewMarkdown(contentEditorContainer); // Pass container
+                                }
+                            });
+                        }
+                     }
+                 });
+             });
+
 
             // --- PRESENTATION EDITOR LOGIC ---
-            const slideUploadInput = document.getElementById('slide-upload-input');
-            const slideSorter = document.getElementById('slide-sorter');
+            // Ця логіка може бути глобальною, якщо слайди завантажуються тільки в одному місці за раз
+            const slideUploadInput = document.getElementById('slide-upload-input'); // Припускаємо, що ID унікальний
+            const slideSorter = document.getElementById('slide-sorter'); // Припускаємо, що ID унікальний
             let slides = [];
             let draggedItem = null;
 
@@ -1042,7 +1426,7 @@
                     if (!draggedItem) return;
 
                     slideSorter.querySelectorAll('.slide-thumbnail').forEach(el => el.classList.remove('drop-indicator-before', 'drop-indicator-after'));
-                    
+
                     const afterElement = getDragAfterElement(slideSorter, e.clientX);
                     if (afterElement) {
                         const box = afterElement.getBoundingClientRect();
@@ -1056,14 +1440,14 @@
                         slideSorter.lastElementChild.classList.add('drop-indicator-after');
                     }
                 });
-                
+
                 slideSorter.addEventListener('drop', (e) => {
                     e.preventDefault();
                     if (!draggedItem) return;
 
                     const indicatorBefore = slideSorter.querySelector('.drop-indicator-before');
                     const indicatorAfter = slideSorter.querySelector('.drop-indicator-after');
-                    
+
                     const draggedId = draggedItem.dataset.id;
                     const draggedIndex = slides.findIndex(s => String(s.id) === draggedId); // Use String for comparison
 
@@ -1084,8 +1468,8 @@
                         if (draggedIndex < targetIndex) targetIndex--;
                         slides.splice(targetIndex, 0, movedSlide);
                     }
-                    
-                    renderSlideSorter(); 
+
+                    renderSlideSorter();
                 });
 
                 function getDragAfterElement(container, x) {
@@ -1101,28 +1485,20 @@
                     }, { offset: Number.NEGATIVE_INFINITY }).element;
                 }
             } // End of presentation check
-            
-            document.querySelectorAll('.preview-content-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const activeEditor = contentEditorContainer.querySelector('[id$="-editor"]:not(.hidden)');
-                    if (activeEditor && activeEditor.id === 'presentation-editor') {
-                        previewPresentation();
-                    } else if (activeEditor && activeEditor.id === 'markdown-editor') {
-                        previewMarkdown();
-                    } 
-                    // No preview action for 'test-editor'
-                });
-            });
 
-            function previewPresentation() {
+
+            // Змінено, щоб приймати батьківський елемент
+            function previewPresentation(editorContainer) {
+                const previewContainer = editorContainer.nextElementSibling; // Get sibling preview container
+                if (!previewContainer) return; // Add check
                 if(slides.length === 0) {
                     alert('Please upload some slides first.');
                     return;
                 }
-                contentPreviewContainer.classList.remove('hidden');
+                previewContainer.classList.remove('hidden');
                 let currentSlideIndex = 0;
                 function showSlide(index) {
-                     contentPreviewContainer.innerHTML = `
+                     previewContainer.innerHTML = `
                         <div class="relative bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
                              <div class="flex justify-between items-center mb-2">
                                 <h4 class="font-semibold">Presentation Preview</h4>
@@ -1140,7 +1516,7 @@
                     lucide.createIcons();
                 }
                 showSlide(currentSlideIndex);
-                contentPreviewContainer.onclick = (e) => {
+                previewContainer.onclick = (e) => {
                     if (e.target.closest('.preview-next')) {
                         currentSlideIndex = (currentSlideIndex + 1) % slides.length;
                         showSlide(currentSlideIndex);
@@ -1152,327 +1528,318 @@
                 };
             }
 
-            function previewMarkdown() {
-                contentPreviewContainer.classList.remove('hidden');
-                const text = document.querySelector('#markdown-editor textarea')?.value || ''; // Added safe check
-                contentPreviewContainer.innerHTML = `
+            // Змінено, щоб приймати батьківський елемент
+            function previewMarkdown(editorContainer) {
+                const previewContainer = editorContainer.nextElementSibling; // Get sibling preview container
+                 if (!previewContainer) return; // Add check
+                previewContainer.classList.remove('hidden');
+                const text = editorContainer.querySelector('#markdown-editor textarea')?.value || ''; // Added safe check
+                previewContainer.innerHTML = `
                     <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
                         <h4 class="font-semibold mb-2">Text Preview</h4>
                         <div class="prose dark:prose-invert max-w-none">${text || 'No content yet.'}</div>
                     </div>`;
             }
 
-            // --- TEST EDITOR LOGIC ---
-            const testEditor = document.getElementById('test-editor');
-            const questionsContainer = document.getElementById('test-questions-container');
-            const addQuestionBtn = document.getElementById('add-question-btn');
-            let questionCounter = 1; // Start from 1 as one question exists
+            // --- TEST EDITOR LOGIC (винесено в окрему функцію) ---
+            function initTestEditor(testEditorContainer) {
+                if (!testEditorContainer) return;
+                const testEditor = testEditorContainer.querySelector('#test-editor'); // Знаходимо сам редактор всередині
+                if (!testEditor) return;
 
-            function getAnswerMarkerHTML(type, questionIndex, answerIndex) {
-                 const name = `correct_answer_q${questionIndex}`; // Unique name per question group (for radio)
-                 const id = `q${questionIndex}_ans_${answerIndex}`; // Unique ID for label association
-                 const value = `ans_${answerIndex}`; // Simple value, could be improved if needed
+                const questionsContainer = testEditor.querySelector('.test-questions-container');
+                const addQuestionBtn = testEditor.querySelector('.add-question-btn');
+                let questionCounter = 1; // Start from 1 as one question exists IN THIS EDITOR
 
-                 if (type === 'single' || type === 'truefalse') {
-                     // Using Tailwind class form-radio
-                     return `<input type="radio" name="${name}" value="${value}" id="${id}" class="answer-marker form-radio">`;
-                 } else if (type === 'multiple') {
-                     // Using Tailwind class form-checkbox
-                     return `<input type="checkbox" name="${name}[]" value="${value}" id="${id}" class="answer-marker form-checkbox">`;
-                 }
-                 return '';
-            }
+                 // ---- Внутрішні функції initTestEditor ----
+                 function getAnswerMarkerHTML(type, questionIndex, answerIndex) {
+                    const name = `correct_answer_q${questionIndex}_m${testEditorContainer.dataset.moduleId || 1}`; // Унікальне ім'я для модуля
+                    const id = `q${questionIndex}_ans_${answerIndex}_m${testEditorContainer.dataset.moduleId || 1}`;
+                    const value = `ans_${answerIndex}`;
 
-             function createAnswerRow(questionIndex, answerIndex, type = 'single') {
-                const row = document.createElement('div');
-                row.className = 'answer-row flex items-center gap-2';
-                const markerHTML = getAnswerMarkerHTML(type, questionIndex, answerIndex); // Pass answerIndex too
-                row.innerHTML = `
-                    ${markerHTML}
-                    <input type="text" class="form-input text-sm flex-grow" placeholder="Answer option ${answerIndex + 1}">
-                    <button type="button" class="btn-icon-sm delete-answer-btn">
-                        <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i> </button>
-                `;
-                // Add event listener directly to the new button
-                row.querySelector('.delete-answer-btn').addEventListener('click', () => {
-                    const container = row.closest('.test-answers-container');
-                    row.remove();
-                    renumberPlaceholders(container);
-                });
-                return row;
-            }
-             
-            // Helper to renumber answer placeholders after deletion
-            function renumberPlaceholders(answersContainer) {
-                if (!answersContainer) return;
-                answersContainer.querySelectorAll('.answer-row input[type="text"]').forEach((input, index) => {
-                   // Only update placeholder if not readonly (i.e., not True/False)
-                   if (!input.readOnly) {
-                       input.placeholder = `Answer option ${index + 1}`;
-                   }
-                });
-                // Also re-index marker IDs if necessary
-                answersContainer.querySelectorAll('.answer-row .answer-marker').forEach((marker, index) => {
-                    // Extract question index carefully
-                    const nameMatch = marker.name.match(/q(\d+)/);
-                    if (nameMatch && nameMatch[1]) {
-                        const qIndex = nameMatch[1];
-                        marker.id = `q${qIndex}_ans_${index}`;
+                    if (type === 'single' || type === 'truefalse') {
+                        return `<input type="radio" name="${name}" value="${value}" id="${id}" class="answer-marker form-radio">`;
+                    } else if (type === 'multiple') {
+                        return `<input type="checkbox" name="${name}[]" value="${value}" id="${id}" class="answer-marker form-checkbox">`;
                     }
-                });
-            }
-
-
-            function updateAnswerMarkers(questionBlock, newType) {
-                 const answersContainer = questionBlock.querySelector('.test-answers-container');
-                 const questionIndex = parseInt(questionBlock.dataset.questionIndex);
-                 const addAnswerButton = questionBlock.querySelector('.add-answer-btn');
-                 
-                 // Store checked state before replacing
-                 const checkedValues = [];
-                 answersContainer.querySelectorAll('.answer-marker:checked').forEach(marker => checkedValues.push(marker.value));
-
-                 // Update existing markers first
-                 answersContainer.querySelectorAll('.answer-row').forEach((row, index) => { // Added index
-                     const oldMarker = row.querySelector('.answer-marker');
-                     const newMarkerHTML = getAnswerMarkerHTML(newType, questionIndex, index); // Pass index
-                     const tempDiv = document.createElement('div');
-                     tempDiv.innerHTML = newMarkerHTML;
-                     const newMarker = tempDiv.firstChild;
-                     
-                     if(oldMarker && newMarker) {
-                         // Restore checked state if value matches (for checkbox -> checkbox)
-                         if (checkedValues.includes(newMarker.value)) {
-                             newMarker.checked = true;
-                         }
-                         row.replaceChild(newMarker, oldMarker);
-                     } else if (!oldMarker && newMarker) { 
-                         row.insertBefore(newMarker, row.firstChild);
-                     } else if (oldMarker && !newMarker) { 
-                         oldMarker.remove();
-                     }
-                 });
-
-                 // Special case for True/False
-                 if (newType === 'truefalse') {
-                     const answerRows = Array.from(answersContainer.querySelectorAll('.answer-row'));
-                     // Remove extra answers beyond the first two
-                     answerRows.slice(2).forEach(row => row.remove());
-                     
-                     // Ensure exactly two answers exist
-                     while (answersContainer.children.length < 2) {
-                        const newAnswerIndex = answersContainer.children.length;
-                        // Pass the correct type when creating
-                        answersContainer.appendChild(createAnswerRow(questionIndex, newAnswerIndex, newType)); 
-                     }
-                     
-                     // Set text and make readonly
-                     const inputs = answersContainer.querySelectorAll('input[type="text"]');
-                     if(inputs[0]) { inputs[0].value = "True"; inputs[0].readOnly = true; inputs[0].placeholder = ''; }
-                     if(inputs[1]) { inputs[1].value = "False"; inputs[1].readOnly = true; inputs[1].placeholder = ''; }
-
-                     // Hide add button
-                     if(addAnswerButton) addAnswerButton.classList.add('hidden');
-                 } else {
-                     // Make text inputs editable again and show add button
-                     answersContainer.querySelectorAll('input[type="text"]').forEach(input => {
-                        input.readOnly = false;
-                        // Clear True/False values if switching away from it
-                        if (input.value === "True" || input.value === "False") {
-                           input.value = ''; 
-                        }
-                     });
-                     if(addAnswerButton) addAnswerButton.classList.remove('hidden');
-                     renumberPlaceholders(answersContainer); // Renumber after potential clearing
-                 }
-                 // Ensure icons are rendered for potential new delete buttons in true/false creation
-                 lucide.createIcons(); 
-            }
-
-            // Setup custom dropdown for Answer Type within a specific question block
-            function setupAnswerTypeDropdown(questionBlock) {
-                 const wrapper = questionBlock.querySelector('.answer-type-dropdown-wrapper');
-                 if (!wrapper) return;
-                 const toggle = wrapper.querySelector('.answer-type-toggle');
-                 const menu = wrapper.querySelector('.answer-type-menu');
-                 const display = wrapper.querySelector('.answer-type-display');
-                 const icon = toggle.querySelector('i');
-                 // Get initial type from selected item in HTML or default
-                 let currentType = menu.querySelector('.answer-type-item.selected')?.dataset.value || 'single'; 
-
-                 function updateItemStyles() {
-                     // Update selection style in the dropdown list
-                     menu.querySelectorAll('.answer-type-item').forEach(item => {
-                         item.classList.remove('selected');
-                         if (item.dataset.value === currentType) {
-                             item.classList.add('selected');
-                         }
-                     });
-                     // Update button text to reflect current selection
-                     const selectedItem = menu.querySelector('.answer-type-item.selected');
-                     if (selectedItem) {
-                         display.textContent = selectedItem.textContent.trim(); // FIXED: Update button text
-                     }
-                 }
-
-                 toggle.addEventListener('click', (e) => {
-                     e.stopPropagation();
-                     const isHidden = menu.classList.contains('hidden');
-                     // Close all *other* answer type dropdowns within the test editor
-                     testEditor.querySelectorAll('.answer-type-menu').forEach(m => {
-                         if (m !== menu) { 
-                             m.classList.add('hidden');
-                             // Also reset the icon for other dropdowns
-                             const otherToggle = m.closest('.answer-type-dropdown-wrapper')?.querySelector('.answer-type-toggle i');
-                             if(otherToggle) otherToggle.classList.remove('-rotate-180');
-                         }
-                     });
-                     // Toggle current menu
-                     menu.classList.toggle('hidden');
-                     icon.classList.toggle('-rotate-180');
-                 });
-
-                 menu.addEventListener('click', (e) => {
-                     const item = e.target.closest('.answer-type-item');
-                     if (item) {
-                         const newType = item.dataset.value;
-                         if (newType !== currentType) { // Only update if type actually changed
-                            currentType = newType;
-                            updateItemStyles(); // Update styles AND button text
-                            // CRUCIAL: Update markers based on new selection
-                            updateAnswerMarkers(questionBlock, currentType);
-                         }
-                         menu.classList.add('hidden'); // Close menu regardless
-                         icon.classList.remove('-rotate-180');
-                     }
-                 });
-                 updateItemStyles(); // Set initial style and button text
-             }
-
-            function addQuestion() {
-                questionCounter++;
-                const template = questionsContainer.querySelector('.question-block');
-                 if (!template) {
-                     console.error("Question block template not found!");
-                     return; 
-                 }
-                const newQuestionBlock = template.cloneNode(true);
-                
-                newQuestionBlock.dataset.questionIndex = questionCounter; // Set index
-                
-                // Clear input values in the clone
-                newQuestionBlock.querySelector('.question-text').value = '';
-                
-                // --- Reset custom dropdown ---
-                const newToggle = newQuestionBlock.querySelector('.answer-type-toggle');
-                const newMenu = newQuestionBlock.querySelector('.answer-type-menu');
-                const newDisplay = newQuestionBlock.querySelector('.answer-type-display');
-                newDisplay.textContent = 'Single Correct Answer'; // Reset text
-                newMenu.querySelectorAll('.answer-type-item').forEach(item => item.classList.remove('selected')); 
-                newMenu.querySelector('.answer-type-item[data-value="single"]').classList.add('selected'); 
-                newMenu.classList.add('hidden'); 
-                const newIcon = newToggle.querySelector('i');
-                if (newIcon) newIcon.classList.remove('-rotate-180'); 
-                // --- End reset custom dropdown ---
-
-                newQuestionBlock.querySelector('.question-points').value = '10';
-                
-                // Set unique name for radio/checkbox markers in the new question block
-                const answersContainer = newQuestionBlock.querySelector('.test-answers-container');
-                answersContainer.innerHTML = ''; // Clear default answers from clone
-                
-                // Add default 3 answers for the new question (type 'single' initially)
-                for (let i = 0; i < 3; i++) {
-                    answersContainer.appendChild(createAnswerRow(questionCounter, i, 'single'));
+                    return '';
                 }
-                
-                // Add event listener for the Add Answer button in the new block
-                newQuestionBlock.querySelector('.add-answer-btn').addEventListener('click', (e) => {
-                    const currentQuestionBlock = e.target.closest('.question-block');
-                    const currentAnswersContainer = currentQuestionBlock.querySelector('.test-answers-container');
-                    const newAnswerIndex = currentAnswersContainer.children.length;
-                    const questionIndex = parseInt(currentQuestionBlock.dataset.questionIndex);
-                    // Read the CURRENT type from the custom dropdown's selected item data-value
-                    const currentType = currentQuestionBlock.querySelector('.answer-type-item.selected')?.dataset.value || 'single'; 
-                    currentAnswersContainer.appendChild(createAnswerRow(questionIndex, newAnswerIndex, currentType));
+
+                function createAnswerRow(questionIndex, answerIndex, type = 'single') {
+                    const row = document.createElement('div');
+                    row.className = 'answer-row flex items-center gap-2';
+                    const markerHTML = getAnswerMarkerHTML(type, questionIndex, answerIndex);
+                    row.innerHTML = `
+                        ${markerHTML}
+                        <input type="text" class="form-input text-sm flex-grow" placeholder="Answer option ${answerIndex + 1}">
+                        <button type="button" class="btn-icon-sm delete-answer-btn">
+                            <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i> </button>
+                    `;
+                    row.querySelector('.delete-answer-btn').addEventListener('click', () => {
+                        const container = row.closest('.test-answers-container');
+                        row.remove();
+                        renumberPlaceholders(container);
+                    });
+                    return row;
+                }
+
+                function renumberPlaceholders(answersContainer) {
+                    if (!answersContainer) return;
+                    answersContainer.querySelectorAll('.answer-row input[type="text"]').forEach((input, index) => {
+                    if (!input.readOnly) {
+                        input.placeholder = `Answer option ${index + 1}`;
+                    }
+                    });
+                    answersContainer.querySelectorAll('.answer-row .answer-marker').forEach((marker, index) => {
+                        const nameMatch = marker.name.match(/q(\d+)/);
+                        const moduleMatch = marker.name.match(/m(\d+)/); // Отримуємо індекс модуля
+                        if (nameMatch && nameMatch[1] && moduleMatch && moduleMatch[1]) {
+                            const qIndex = nameMatch[1];
+                            const mIndex = moduleMatch[1];
+                            marker.id = `q${qIndex}_ans_${index}_m${mIndex}`;
+                        }
+                    });
+                }
+
+
+                function updateAnswerMarkers(questionBlock, newType) {
+                    const answersContainer = questionBlock.querySelector('.test-answers-container');
+                    const questionIndex = parseInt(questionBlock.dataset.questionIndex);
+                    const addAnswerButton = questionBlock.querySelector('.add-answer-btn');
+
+                    const checkedValues = [];
+                    answersContainer.querySelectorAll('.answer-marker:checked').forEach(marker => checkedValues.push(marker.value));
+
+                    answersContainer.querySelectorAll('.answer-row').forEach((row, index) => {
+                        const oldMarker = row.querySelector('.answer-marker');
+                        const newMarkerHTML = getAnswerMarkerHTML(newType, questionIndex, index);
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = newMarkerHTML;
+                        const newMarker = tempDiv.firstChild;
+
+                        if(oldMarker && newMarker) {
+                            if (checkedValues.includes(newMarker.value)) {
+                                newMarker.checked = true;
+                            }
+                            row.replaceChild(newMarker, oldMarker);
+                        } else if (!oldMarker && newMarker) {
+                            row.insertBefore(newMarker, row.firstChild);
+                        } else if (oldMarker && !newMarker) {
+                            oldMarker.remove();
+                        }
+                    });
+
+                    if (newType === 'truefalse') {
+                        const answerRows = Array.from(answersContainer.querySelectorAll('.answer-row'));
+                        answerRows.slice(2).forEach(row => row.remove());
+                        while (answersContainer.children.length < 2) {
+                            const newAnswerIndex = answersContainer.children.length;
+                            answersContainer.appendChild(createAnswerRow(questionIndex, newAnswerIndex, newType));
+                        }
+                        const inputs = answersContainer.querySelectorAll('input[type="text"]');
+                        if(inputs[0]) { inputs[0].value = "True"; inputs[0].readOnly = true; inputs[0].placeholder = ''; }
+                        if(inputs[1]) { inputs[1].value = "False"; inputs[1].readOnly = true; inputs[1].placeholder = ''; }
+                        if(addAnswerButton) addAnswerButton.classList.add('hidden');
+                    } else {
+                        answersContainer.querySelectorAll('input[type="text"]').forEach(input => {
+                            input.readOnly = false;
+                            if (input.value === "True" || input.value === "False") {
+                            input.value = '';
+                            }
+                        });
+                        if(addAnswerButton) addAnswerButton.classList.remove('hidden');
+                        renumberPlaceholders(answersContainer);
+                    }
                     lucide.createIcons();
-                });
+                }
 
-                // Setup the custom dropdown functionality for the new block
-                setupAnswerTypeDropdown(newQuestionBlock);
+                function setupAnswerTypeDropdown(questionBlock) {
+                    const wrapper = questionBlock.querySelector('.answer-type-dropdown-wrapper');
+                    if (!wrapper) return;
+                    const toggle = wrapper.querySelector('.answer-type-toggle');
+                    const menu = wrapper.querySelector('.answer-type-menu');
+                    const display = wrapper.querySelector('.answer-type-display');
+                    const icon = toggle.querySelector('i');
+                    let currentType = menu.querySelector('.answer-type-item.selected')?.dataset.value || 'single';
 
-                // Make sure delete buttons in the newly created default answers work
-                newQuestionBlock.querySelectorAll('.delete-answer-btn').forEach(btn => {
-                   btn.addEventListener('click', (e) => {
-                       // Use closest to find the row, more robust
-                       const answerRow = e.target.closest('.answer-row'); 
-                       if (answerRow) {
-                           const container = answerRow.closest('.test-answers-container');
-                           answerRow.remove();
-                           renumberPlaceholders(container);
-                       }
-                   });
-                });
+                    function updateItemStyles() {
+                        menu.querySelectorAll('.answer-type-item').forEach(item => {
+                            item.classList.remove('selected');
+                            if (item.dataset.value === currentType) {
+                                item.classList.add('selected');
+                            }
+                        });
+                        const selectedItem = menu.querySelector('.answer-type-item.selected');
+                        if (selectedItem) {
+                            display.textContent = selectedItem.textContent.trim();
+                        }
+                    }
 
-                questionsContainer.appendChild(newQuestionBlock);
-                lucide.createIcons(); // Re-render all icons
-            }
+                    toggle.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        // Закриваємо ТІЛЬКИ дропдауни ТИПУ ВІДПОВІДІ всередині ПОТОЧНОГО редактора тестів
+                        testEditor.querySelectorAll('.answer-type-menu').forEach(m => {
+                             if (m !== menu) {
+                                m.classList.add('hidden');
+                                const otherToggle = m.closest('.answer-type-dropdown-wrapper')?.querySelector('.answer-type-toggle i');
+                                if(otherToggle) otherToggle.classList.remove('-rotate-180');
+                             }
+                        });
+                        menu.classList.toggle('hidden');
+                        icon.classList.toggle('-rotate-180');
+                    });
 
-            if(addQuestionBtn) {
-                 addQuestionBtn.addEventListener('click', addQuestion);
-            }
-            
-            // Initial setup for the FIRST question's elements
-             const firstQuestionBlock = questionsContainer.querySelector('.question-block');
-             if(firstQuestionBlock) {
-                 firstQuestionBlock.dataset.questionIndex = 1; // Set index for the first question
-                 
-                 // Add Answer button
-                 firstQuestionBlock.querySelector('.add-answer-btn').addEventListener('click', (e) => {
-                    const currentQuestionBlock = e.target.closest('.question-block');
-                    const currentAnswersContainer = currentQuestionBlock.querySelector('.test-answers-container');
-                    const newAnswerIndex = currentAnswersContainer.children.length;
-                    const questionIndex = parseInt(currentQuestionBlock.dataset.questionIndex);
-                    const currentType = currentQuestionBlock.querySelector('.answer-type-item.selected')?.dataset.value || 'single';
-                    currentAnswersContainer.appendChild(createAnswerRow(questionIndex, newAnswerIndex, currentType));
+                    menu.addEventListener('click', (e) => {
+                        const item = e.target.closest('.answer-type-item');
+                        if (item) {
+                            const newType = item.dataset.value;
+                            if (newType !== currentType) {
+                                currentType = newType;
+                                updateItemStyles();
+                                updateAnswerMarkers(questionBlock, currentType);
+                            }
+                            menu.classList.add('hidden');
+                            icon.classList.remove('-rotate-180');
+                        }
+                    });
+                    updateItemStyles();
+                }
+
+                function addQuestion() {
+                    questionCounter++;
+                    const template = questionsContainer.querySelector('.question-block');
+                    if (!template) { console.error("Question block template not found!"); return; }
+                    const newQuestionBlock = template.cloneNode(true);
+                    newQuestionBlock.dataset.questionIndex = questionCounter;
+                    newQuestionBlock.querySelector('.question-text').value = '';
+
+                    const newToggle = newQuestionBlock.querySelector('.answer-type-toggle');
+                    const newMenu = newQuestionBlock.querySelector('.answer-type-menu');
+                    const newDisplay = newQuestionBlock.querySelector('.answer-type-display');
+                    newDisplay.textContent = 'Single Correct Answer';
+                    newMenu.querySelectorAll('.answer-type-item').forEach(item => item.classList.remove('selected'));
+                    newMenu.querySelector('.answer-type-item[data-value="single"]').classList.add('selected');
+                    newMenu.classList.add('hidden');
+                    const newIcon = newToggle.querySelector('i');
+                    if (newIcon) newIcon.classList.remove('-rotate-180');
+
+                    newQuestionBlock.querySelector('.question-points').value = '10';
+                    const answersContainer = newQuestionBlock.querySelector('.test-answers-container');
+                    answersContainer.innerHTML = '';
+                    for (let i = 0; i < 3; i++) {
+                        answersContainer.appendChild(createAnswerRow(questionCounter, i, 'single'));
+                    }
+
+                    newQuestionBlock.querySelector('.add-answer-btn').addEventListener('click', (e) => {
+                        const currentQuestionBlock = e.target.closest('.question-block');
+                        const currentAnswersContainer = currentQuestionBlock.querySelector('.test-answers-container');
+                        const newAnswerIndex = currentAnswersContainer.children.length;
+                        const questionIndex = parseInt(currentQuestionBlock.dataset.questionIndex);
+                        const currentType = currentQuestionBlock.querySelector('.answer-type-item.selected')?.dataset.value || 'single';
+                        currentAnswersContainer.appendChild(createAnswerRow(questionIndex, newAnswerIndex, currentType));
+                        lucide.createIcons();
+                    });
+
+                    setupAnswerTypeDropdown(newQuestionBlock);
+
+                    newQuestionBlock.querySelectorAll('.delete-answer-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const answerRow = e.target.closest('.answer-row');
+                        if (answerRow) {
+                            const container = answerRow.closest('.test-answers-container');
+                            answerRow.remove();
+                            renumberPlaceholders(container);
+                        }
+                    });
+                    });
+
+                    questionsContainer.appendChild(newQuestionBlock);
                     lucide.createIcons();
-                 });
+                }
+                 // ---- END Внутрішні функції ----
 
-                // Setup custom dropdown
-                 setupAnswerTypeDropdown(firstQuestionBlock);
+                if(addQuestionBtn) {
+                    addQuestionBtn.addEventListener('click', addQuestion);
+                }
 
-                 // Delete Answer buttons for initial answers
-                 firstQuestionBlock.querySelectorAll('.delete-answer-btn').forEach(btn => {
-                   btn.addEventListener('click', (e) => {
-                       const answerRow = e.target.closest('.answer-row');
-                       if (answerRow) {
-                           const container = answerRow.closest('.test-answers-container');
-                           answerRow.remove();
-                           renumberPlaceholders(container);
-                       }
-                   });
-                });
-             }
-             
+                const firstQuestionBlock = questionsContainer.querySelector('.question-block');
+                if(firstQuestionBlock) {
+                    firstQuestionBlock.dataset.questionIndex = 1;
+                    firstQuestionBlock.querySelector('.add-answer-btn').addEventListener('click', (e) => {
+                        const currentQuestionBlock = e.target.closest('.question-block');
+                        const currentAnswersContainer = currentQuestionBlock.querySelector('.test-answers-container');
+                        const newAnswerIndex = currentAnswersContainer.children.length;
+                        const questionIndex = parseInt(currentQuestionBlock.dataset.questionIndex);
+                        const currentType = currentQuestionBlock.querySelector('.answer-type-item.selected')?.dataset.value || 'single';
+                        currentAnswersContainer.appendChild(createAnswerRow(questionIndex, newAnswerIndex, currentType));
+                        lucide.createIcons();
+                    });
+                    setupAnswerTypeDropdown(firstQuestionBlock);
+                    firstQuestionBlock.querySelectorAll('.delete-answer-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const answerRow = e.target.closest('.answer-row');
+                        if (answerRow) {
+                            const container = answerRow.closest('.test-answers-container');
+                            answerRow.remove();
+                            renumberPlaceholders(container);
+                        }
+                    });
+                    });
+                     // Оновлення імен радіокнопок першого питання
+                     firstQuestionBlock.querySelectorAll('.answer-marker[type="radio"]').forEach(radio => {
+                         radio.name = `correct_answer_q1_m${testEditorContainer.dataset.moduleId || 1}`;
+                     });
+                     firstQuestionBlock.querySelectorAll('.answer-marker').forEach((marker, index) => {
+                         marker.id = `q1_ans_${index}_m${testEditorContainer.dataset.moduleId || 1}`;
+                     });
+                }
+             } // End initTestEditor
+
+            // Ініціалізація логіки кнопки "Add Test" для кожного модуля
+            document.querySelectorAll('.accordion-content').forEach((moduleContent, index) => {
+                const addTestBtn = moduleContent.querySelector('.add-test-to-module-btn');
+                const testContainer = moduleContent.querySelector('.module-test-container');
+
+                if (addTestBtn && testContainer) {
+                    // Додаємо індекс модуля для унікальності
+                    testContainer.dataset.moduleId = index + 1;
+                    // TODO: Потрібно буде оновити ID та name всередині клонованого #test-editor, щоб вони були унікальними для модуля
+
+                    addTestBtn.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Зупиняємо спливання, щоб не закрити акордеон
+                        testContainer.classList.remove('hidden');
+                        addTestBtn.classList.add('hidden'); // Ховаємо кнопку після додавання
+                        initTestEditor(testContainer); // Ініціалізуємо JS для цього редактора
+                    });
+                }
+            });
+
+
              // Global click listener to close dropdowns
              window.addEventListener('click', (e) => {
-                // Close status dropdown if clicking outside
-                const statusWrapper = document.getElementById('status-container-wrapper');
-                if (statusWrapper && !statusWrapper.contains(e.target)) {
-                    document.getElementById('status-dropdown')?.classList.add('hidden');
-                    document.getElementById('status-selector')?.querySelector('i')?.classList.remove('-rotate-180');
-                }
-                // Close ALL answer type dropdowns if clicking outside any of them
-                if (!e.target.closest('.answer-type-dropdown-wrapper')) {
-                    testEditor?.querySelectorAll('.answer-type-menu').forEach(menu => menu.classList.add('hidden'));
-                    testEditor?.querySelectorAll('.answer-type-toggle i').forEach(icon => icon.classList.remove('-rotate-180'));
-                }
-                // Close professions dropdown if clicking outside
-                 const professionsWrapper = document.getElementById('professions-container-wrapper');
-                 if (professionsWrapper && !professionsWrapper.contains(e.target)) {
-                     document.getElementById('professions-dropdown')?.classList.add('hidden');
-                     document.getElementById('professions-selector')?.querySelector('i')?.classList.remove('-rotate-180');
-                 }
+                // Close all custom dropdowns
+                dropdownWrappers.forEach(wrapper => {
+                     if (wrapper && !wrapper.contains(e.target)) {
+                        wrapper.querySelector('.custom-dropdown-menu')?.classList.add('hidden');
+                        wrapper.querySelector('.custom-dropdown-toggle i[data-lucide="chevron-down"]')?.classList.remove('-rotate-180');
+                    }
+                });
+
+                // Close all professions dropdowns
+                professionWrappers.forEach(wrapper => {
+                     if (wrapper && !wrapper.contains(e.target)) {
+                         wrapper.querySelector('.professions-dropdown')?.classList.add('hidden');
+                         wrapper.querySelector('.professions-selector i[data-lucide="chevron-down"]')?.classList.remove('-rotate-180');
+                     }
+                });
+
+                // Close ALL answer type dropdowns (якщо вони десь з'являться)
+                document.querySelectorAll('.answer-type-dropdown-wrapper').forEach(wrapper => {
+                     if (!wrapper.contains(e.target)) {
+                         wrapper.querySelector('.answer-type-menu')?.classList.add('hidden');
+                         wrapper.querySelector('.answer-type-toggle i')?.classList.remove('-rotate-180');
+                     }
+                });
              });
 
 
