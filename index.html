@@ -119,12 +119,20 @@
         .accordion-icon { transition: transform 0.3s ease; }
         .accordion-icon.open { transform: rotate(180deg); }
 
-        /* ЗМІНЕНО: .tool-tag -> .skill-tag */
+        /* ЗМІНЕНО: .tool-tag (reverted from skill-tag) */
+        .tool-tag {
+            display: inline-flex; align-items: center; gap: 6px; background-color: #e0e0e0;
+            color: #2d3748; padding: 4px 8px; border-radius: 6px; font-size: 14px; font-weight: 500;
+        }
+        .dark .tool-tag { background-color: #424242; color: #f7fafc; }
+
+        /* ДОДАНО: .skill-tag (for lessons) */
         .skill-tag {
             display: inline-flex; align-items: center; gap: 6px; background-color: #e0e0e0;
             color: #2d3748; padding: 4px 8px; border-radius: 6px; font-size: 14px; font-weight: 500;
         }
         .dark .skill-tag { background-color: #424242; color: #f7fafc; }
+        /* --- */
 
         /* ДОДАНО: Нові стилі для тегів професій */
         .profession-tag-base { /* Base style for both */
@@ -346,6 +354,35 @@
             --tw-ring-offset-color: #2d3748;
          }
 
+        /* ДОДАНО: Стилі для табів уроку */
+        .lesson-tab-btn {
+            padding: 8px 16px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .lesson-tab-btn:hover {
+            color: var(--color-text-primary);
+        }
+        .dark .lesson-tab-btn:hover {
+            color: #e2e8f0;
+        }
+        .lesson-tab-btn.active {
+            color: var(--color-primary-main);
+            border-bottom-color: var(--color-primary-main);
+        }
+        .dark .lesson-tab-btn.active {
+             color: var(--color-primary-light);
+             border-bottom-color: var(--color-primary-light);
+        }
+        .lesson-tab-panel {
+            padding-top: 1.5rem; /* 24px */
+        }
+        /* --- */
+
+
     </style>
 </head>
 <body class="text-slate-800 dark:text-slate-50 transition-colors duration-300">
@@ -434,11 +471,11 @@
                                 <textarea id="course-description" rows="5" class="form-textarea" placeholder="Enter the full description of the course..."></textarea>
                             </div>
                             <div>
-                                <label for="skills-input" class="form-label">Skills</label>
-                                <div id="selected-skills-container" class="flex flex-wrap gap-2 mb-2">
+                                <label for="tools-input" class="form-label">Tools</label>
+                                <div id="selected-tools-container" class="flex flex-wrap gap-2 mb-2">
                                 </div>
-                                <input type="text" id="skills-input" class="form-input" placeholder="Type a skill and press Enter">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Skills acquired upon course completion (e.g., Communication, Design Thinking).</p>
+                                <input type="text" id="tools-input" class="form-input" placeholder="Type a tool and press Enter">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Tools used in this course (e.g., Figma, Unity, Git).</p>
                             </div>
                             <div class="relative custom-dropdown-wrapper" id="course-difficulty-wrapper">
                                 <label class="form-label">Difficulty</label>
@@ -719,7 +756,14 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                         <div>
+                                                        <div>
+                                                            <label for="lesson-1-1-skills-input" class="form-label text-sm">Skills</label>
+                                                            <div id="lesson-1-1-selected-skills-container" class="flex flex-wrap gap-2 mb-2">
+                                                            </div>
+                                                            <input type="text" id="lesson-1-1-skills-input" class="form-input text-sm" placeholder="Type a skill and press Enter">
+                                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Skills acquired in this lesson.</p>
+                                                        </div>
+                                                        <div>
                                                             <label for="lesson-1-1-desc" class="form-label text-sm">Lesson Description</label>
                                                             <textarea id="lesson-1-1-desc" rows="4" class="form-textarea text-sm" placeholder="Short description of the lesson's topic..."></textarea>
                                                         </div>
@@ -755,65 +799,180 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
-                                                            <label class="form-label text-sm">Lesson Materials</label>
-                                                            <div class="lesson-materials-container space-y-4 min-h-[20px]"> </div>
-                                                            <button type="button" class="add-lesson-material-btn btn btn-outline btn-sm w-full mt-3">
-                                                                <i data-lucide="plus" class="w-4 h-4"></i> Add Material
-                                                            </button>
                                                         </div>
-                                                        <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
-                                                            <label class="form-label text-sm">Lesson Practice</label>
-                                                            <div class="lesson-practice-container space-y-4 min-h-[20px]"> </div>
-                                                            <button type="button" class="add-lesson-practice-btn btn btn-outline btn-sm w-full mt-3">
-                                                                <i data-lucide="plus" class="w-4 h-4"></i> Add Practice Link
-                                                            </button>
-                                                        </div>
-                                                    </div>
+                                                    
                                                     <div class="col-span-10 mt-4">
-                                                        <div id="content-type-wrapper">
-                                                            <div id="content-type-selector" class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
-                                                                <div class="flex justify-between items-center mb-4">
-                                                                    <h3 class="font-semibold text-base">Select Content Type</h3>
-                                                                </div>
-                                                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                                                    <div class="content-type-card" data-type="markdown"><div class="flex items-start gap-3"><i data-lucide="file-text" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Markdown Text</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Text content with Markdown formatting.</p></div></div></div>
-                                                                    <div class="content-type-card" data-type="presentation"><div class="flex items-start gap-3"><i data-lucide="presentation" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Presentation</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Presentation-style content with slides.</p></div></div></div>
-                                                                    <div class="content-type-card" data-type="html"><div class="flex items-start gap-3"><i data-lucide="code-2" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Full HTML Content</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Complete HTML markup with custom styles.</p></div></div></div>
-                                                                    <div class="content-type-card" data-type="html-block"><div class="flex items-start gap-3"><i data-lucide="layout-template" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">HTML Block</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Modular HTML content block for layouts.</p></div></div></div>
-                                                                    <div class="content-type-card" data-type="video"><div class="flex items-start gap-3"><i data-lucide="video" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Video Content</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Embedded video player.</p></div></div></div>
-                                                                    <div class="content-type-card" data-type="flipping"><div class="flex items-start gap-3"><i data-lucide="layers" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Flipping Cards</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive cards that flip when clicked.</p></div></div></div>
-                                                                    <div class="content-type-card" data-type="labyrinth"><div class="flex items-start gap-3"><i data-lucide="network" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Labyrinth</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive decision tree navigation.</p></div></div></div>
-                                                                    <div class="content-type-card" data-type="memory"><div class="flex items-start gap-3"><i data-lucide="puzzle" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Memory Game</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Matching pairs memory game.</p></div></div></div>
-                                                                    <div class="content-type-card" data-type="tag-cloud"><div class="flex items-start gap-3"><i data-lucide="cloud" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Tag Cloud</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive word cloud with definitions.</p></div></div></div>
-                                                                    <div class="content-type-card" data-type="role-play"><div class="flex items-start gap-3"><i data-lucide="message-square" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Role Play Game</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive dialogue scenarios.</p></div></div></div>
-                                                                    </div>
+                                                        <div class="lesson-tabs-wrapper">
+                                                            <div class="border-b border-gray-200 dark:border-gray-700">
+                                                                <nav class="flex -mb-px space-x-4" aria-label="Tabs">
+                                                                    <button type="button" class="lesson-tab-btn active" data-tab="content">
+                                                                        <i data-lucide="layout-dashboard" class="w-4 h-4 inline-block mr-2"></i> Content
+                                                                    </button>
+                                                                    <button type="button" class="lesson-tab-btn" data-tab="materials">
+                                                                        <i data-lucide="paperclip" class="w-4 h-4 inline-block mr-2"></i> Materials
+                                                                    </button>
+                                                                    <button type="button" class="lesson-tab-btn" data-tab="practice">
+                                                                        <i data-lucide="file-code-2" class="w-4 h-4 inline-block mr-2"></i> Practice
+                                                                    </button>
+                                                                    <button type="button" class="lesson-tab-btn" data-tab="test">
+                                                                        <i data-lucide="clipboard-check" class="w-4 h-4 inline-block mr-2"></i> Test
+                                                                    </button>
+                                                                </nav>
                                                             </div>
-                                                            <div id="content-editor-container" class="hidden mt-4">
-                                                                <div id="presentation-editor" class="hidden">
-                                                                    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
-                                                                        <label for="slide-upload-input" class="w-full file-upload-box !p-4 text-sm mb-4 flex flex-col justify-center items-center">
-                                                                            <i data-lucide="upload-cloud" class="w-8 h-8 text-gray-400 mx-auto"></i>
-                                                                            <span class="mt-2 block">Upload Slides (Images)</span>
-                                                                            <input type="file" id="slide-upload-input" class="hidden" multiple accept="image/*">
-                                                                        </label>
-                                                                        <p class="text-xs text-center text-gray-500 mb-4">Drag and drop slides to reorder them.</p>
-                                                                        <div id="slide-sorter" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[100px]">
+                                                            
+                                                            <div class="lesson-tab-panels">
+                                                                <div class="lesson-tab-panel" id="lesson-tab-content">
+                                                                    <div id="content-type-wrapper">
+                                                                        <div id="content-type-selector" class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                                                                            <div class="flex justify-between items-center mb-4">
+                                                                                <h3 class="font-semibold text-base">Select Content Type</h3>
                                                                             </div>
+                                                                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                                                                <div class="content-type-card" data-type="markdown"><div class="flex items-start gap-3"><i data-lucide="file-text" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Markdown Text</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Text content with Markdown formatting.</p></div></div></div>
+                                                                                <div class="content-type-card" data-type="presentation"><div class="flex items-start gap-3"><i data-lucide="presentation" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Presentation</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Presentation-style content with slides.</p></div></div></div>
+                                                                                <div class="content-type-card" data-type="html"><div class="flex items-start gap-3"><i data-lucide="code-2" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Full HTML Content</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Complete HTML markup with custom styles.</p></div></div></div>
+                                                                                <div class="content-type-card" data-type="html-block"><div class="flex items-start gap-3"><i data-lucide="layout-template" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">HTML Block</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Modular HTML content block for layouts.</p></div></div></div>
+                                                                                <div class="content-type-card" data-type="video"><div class="flex items-start gap-3"><i data-lucide="video" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Video Content</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Embedded video player.</p></div></div></div>
+                                                                                <div class="content-type-card" data-type="flipping"><div class="flex items-start gap-3"><i data-lucide="layers" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Flipping Cards</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive cards that flip when clicked.</p></div></div></div>
+                                                                                <div class="content-type-card" data-type="labyrinth"><div class="flex items-start gap-3"><i data-lucide="network" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Labyrinth</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive decision tree navigation.</p></div></div></div>
+                                                                                <div class="content-type-card" data-type="memory"><div class="flex items-start gap-3"><i data-lucide="puzzle" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Memory Game</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Matching pairs memory game.</p></div></div></div>
+                                                                                <div class="content-type-card" data-type="tag-cloud"><div class="flex items-start gap-3"><i data-lucide="cloud" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Tag Cloud</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive word cloud with definitions.</p></div></div></div>
+                                                                                <div class="content-type-card" data-type="role-play"><div class="flex items-start gap-3"><i data-lucide="message-square" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"></i><div><h4 class="font-semibold">Role Play Game</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Interactive dialogue scenarios.</p></div></div></div>
+                                                                                </div>
+                                                                        </div>
+                                                                        <div id="content-editor-container" class="hidden mt-4">
+                                                                            <div id="presentation-editor" class="hidden">
+                                                                                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                                                                                    <label for="slide-upload-input" class="w-full file-upload-box !p-4 text-sm mb-4 flex flex-col justify-center items-center">
+                                                                                        <i data-lucide="upload-cloud" class="w-8 h-8 text-gray-400 mx-auto"></i>
+                                                                                        <span class="mt-2 block">Upload Slides (Images)</span>
+                                                                                        <input type="file" id="slide-upload-input" class="hidden" multiple accept="image/*">
+                                                                                    </label>
+                                                                                    <p class="text-xs text-center text-gray-500 mb-4">Drag and drop slides to reorder them.</p>
+                                                                                    <div id="slide-sorter" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[100px]">
+                                                                                        </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div id="markdown-editor" class="hidden">
+                                                                                <textarea rows="8" class="form-textarea" placeholder="Write your markdown content here..."></textarea>
+                                                                            </div>
+                                                                             <div class="mt-4 text-right">
+                                                                                <button type="button" class="preview-content-btn btn btn-primary btn-sm hidden">Preview Content</button>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div id="content-preview-container" class="hidden mt-4">
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                                <div id="markdown-editor" class="hidden">
-                                                                    <textarea rows="8" class="form-textarea" placeholder="Write your markdown content here..."></textarea>
+                                                                
+                                                                <div class="lesson-tab-panel hidden" id="lesson-tab-materials">
+                                                                    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                                                                        <h4 class="font-semibold mb-4">Lesson Materials</h4>
+                                                                        <div class="lesson-materials-container space-y-4 min-h-[20px]"> </div>
+                                                                        <button type="button" class="add-lesson-material-btn btn btn-outline btn-sm w-full mt-3">
+                                                                            <i data-lucide="plus" class="w-4 h-4"></i> Add Material
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
-                                                                 <div class="mt-4 text-right">
-                                                                    <button type="button" class="preview-content-btn btn btn-primary btn-sm hidden">Preview Content</button>
+                                                                
+                                                                <div class="lesson-tab-panel hidden" id="lesson-tab-practice">
+                                                                    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                                                                        <h4 class="font-semibold mb-4">Lesson Practice</h4>
+                                                                        <div class="lesson-practice-container space-y-4 min-h-[20px]"> </div>
+                                                                        <button type="button" class="add-lesson-practice-btn btn btn-outline btn-sm w-full mt-3">
+                                                                            <i data-lucide="plus" class="w-4 h-4"></i> Add Practice Link
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <div class="lesson-tab-panel hidden" id="lesson-tab-test">
+                                                                    <div class="lesson-test-container" data-lesson-id="1-1">
+                                                                         <div id="test-editor-l1-1" class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 space-y-6">
+                                                                               <h3 class="text-xl font-semibold border-b border-gray-200 dark:border-gray-600 pb-3 mb-4">Lesson Test Details</h3>
+                                                                               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                                                   <div>
+                                                                                      <label for="test-name-l1-1" class="form-label">Test Name</label> <input type="text" id="test-name-l1-1" class="form-input" placeholder="e.g., Lesson 1 Check">
+                                                                                   </div>
+                                                                                   <div>
+                                                                                      <label for="test-time-limit-l1-1" class="form-label">Time Limit (minutes)</label> <input type="number" id="test-time-limit-l1-1" class="form-input" placeholder="e.g., 15">
+                                                                                   </div>
+                                                                                   <div>
+                                                                                      <label for="test-passing-score-l1-1" class="form-label">Passing Score (%)</label> <input type="number" id="test-passing-score-l1-1" class="form-input" placeholder="e.g., 80" min="0" max="100">
+                                                                                   </div>
+                                                                               </div>
+                                                                               <div>
+                                                                                  <label for="test-description-l1-1" class="form-label">Test Description</label> <textarea id="test-description-l1-1" rows="3" class="form-textarea" placeholder="Optional instructions or description for the test..."></textarea>
+                                                                               </div>
+
+                                                                               <h3 class="text-xl font-semibold border-b border-gray-200 dark:border-gray-600 pb-3 my-6">Questions</h3>
+
+                                                                               <div class="test-questions-container space-y-6"> <div class="question-block bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                                                                        <div>
+                                                                                           <label class="form-label text-sm">Question Text</label>
+                                                                                           <textarea rows="3" class="form-textarea text-sm question-text" placeholder="Enter the question here..."></textarea>
+                                                                                        </div>
+                                                                                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mt-4">
+                                                                                            <div class="md:col-span-3 relative answer-type-dropdown-wrapper">
+                                                                                               <label class="form-label text-sm">Answer Type</label>
+                                                                                               <button type="button" class="custom-dropdown-toggle text-sm answer-type-toggle">
+                                                                                                   <span class="answer-type-display">Single Correct Answer</span>
+                                                                                                   <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400 transition-transform"></i>
+                                                                                               </button>
+                                                                                               <div class="answer-type-menu absolute mt-2 w-full bg-white dark:bg-[#1f2937] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 hidden">
+                                                                                                   <div class="p-2">
+                                                                                                       <button type="button" class="answer-type-item dropdown-item text-sm selected" data-value="single">Single Correct Answer</button>
+                                                                                                       <button type="button" class="answer-type-item dropdown-item text-sm" data-value="multiple">Multiple Correct Answers</button>
+                                                                                                       <button type="button" class="answer-type-item dropdown-item text-sm" data-value="truefalse">True/False</button>
+                                                                                                   </div>
+                                                                                               </div>
+                                                                                            </div>
+                                                                                            <div class="md:col-span-2">
+                                                                                               <label class="form-label text-sm">Points</label>
+                                                                                               <input type="number" class="form-input text-sm question-points" placeholder="e.g., 10" min="1" value="10">
+                                                                                            </div>
+                                                                                        </div>
+
+                                                                                        <div class="mt-4">
+                                                                                            <label class="form-label text-sm mb-2">Answers</label>
+                                                                                            <div class="test-answers-container space-y-2"> <div class="answer-row flex items-center gap-2">
+                                                                                                    <input type="radio" name="correct_answer_q1_l1-1" class="answer-marker form-radio"> <input type="text" class="form-input text-sm flex-grow" placeholder="Answer option 1">
+                                                                                                    <button type="button" class="btn-icon-sm delete-answer-btn">
+                                                                                                        <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                                                                                    </button>
+                                                                                                </div>
+                                                                                                 <div class="answer-row flex items-center gap-2">
+                                                                                                    <input type="radio" name="correct_answer_q1_l1-1" class="answer-marker form-radio"> <input type="text" class="form-input text-sm flex-grow" placeholder="Answer option 2">
+                                                                                                    <button type="button" class="btn-icon-sm delete-answer-btn">
+                                                                                                        <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                                                                                    </button>
+                                                                                                </div>
+                                                                                                 <div class="answer-row flex items-center gap-2">
+                                                                                                    <input type="radio" name="correct_answer_q1_l1-1" class="answer-marker form-radio"> <input type="text" class="form-input text-sm flex-grow" placeholder="Answer option 3">
+                                                                                                    <button type="button" class="btn-icon-sm delete-answer-btn">
+                                                                                                        <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                                                                                    </button>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="mt-2 text-right">
+                                                                                               <button type="button" class="btn btn-outline btn-sm add-answer-btn">
+                                                                                                    <i data-lucide="plus" class="w-4 h-4"></i> Add Answer
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                   </div>
+                                                                                   </div>
+
+                                                                               <div class="mt-6">
+                                                                                    <button type="button" class="btn btn-outline add-question-btn"> <i data-lucide="plus" class="w-5 h-5"></i> Add Question
+                                                                                    </button>
+                                                                               </div>
+                                                                          </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            <div id="content-preview-container" class="hidden mt-4">
-                                                                </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                    </div>
                                             </div>
                                         </div>
                                          <div class="module-test-container hidden mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
@@ -948,11 +1107,52 @@
                 });
             })();
 
-            // ===== ЗМІНЕНО: setupToolsInput -> setupSkillsInput =====
-            (function setupSkillsInput() {
-                const skillsInput = document.getElementById('skills-input');
-                const selectedContainer = document.getElementById('selected-skills-container');
-                if (!skillsInput || !selectedContainer) return; // Захист
+            // ===== ЗМІНЕНО: setupSkillsInput -> setupToolsInput (для курсу) =====
+            (function setupToolsInput() {
+                const toolsInput = document.getElementById('tools-input');
+                const selectedContainer = document.getElementById('selected-tools-container');
+                if (!toolsInput || !selectedContainer) return; // Захист
+                let selectedTools = [];
+
+                toolsInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const tool = toolsInput.value.trim();
+                        if (tool && !selectedTools.includes(tool)) {
+                            selectedTools.push(tool);
+                            toolsInput.value = '';
+                            updateToolsUI();
+                        }
+                    }
+                });
+
+                function updateToolsUI() {
+                    selectedContainer.innerHTML = '';
+                    selectedTools.forEach(tool => {
+                        const tagEl = document.createElement('span');
+                        tagEl.className = 'tool-tag capitalize'; // Використовує .tool-tag
+                        tagEl.innerHTML = `<span>${tool}</span> <i data-lucide="x" class="remove-tag-btn" data-tool-to-remove="${tool}"></i>`;
+                        selectedContainer.appendChild(tagEl);
+                    });
+                    lucide.createIcons();
+                }
+
+                selectedContainer.addEventListener('click', (e) => {
+                    const removeBtn = e.target.closest('.remove-tag-btn');
+                    if (removeBtn) {
+                        const toolToRemove = removeBtn.dataset.toolToRemove;
+                        selectedTools = selectedTools.filter(s => s !== toolToRemove);
+                        updateToolsUI();
+                    }
+                });
+            })();
+            // ===== END ЗМІНИ =====
+            
+            // ===== ДОДАНО: Функція для Skills в уроках =====
+            function initLessonSkillsInput(lessonBlock) {
+                const skillsInput = lessonBlock.querySelector('#lesson-1-1-skills-input'); // Потрібно буде зробити ID унікальними при додаванні нових уроків
+                const selectedContainer = lessonBlock.querySelector('#lesson-1-1-selected-skills-container');
+                if (!skillsInput || !selectedContainer) return; 
                 let selectedSkills = [];
 
                 skillsInput.addEventListener('keydown', (e) => {
@@ -986,8 +1186,8 @@
                         updateSkillsUI();
                     }
                 });
-            })();
-            // ===== END ЗМІНИ =====
+            }
+            // ===== END ДОДАНО =====
 
 
             // ===== Універсальна функція для Dropdown =====
@@ -1199,52 +1399,44 @@
             })();
             // ===== END ЗМІНИ =====
 
-            // ===== ДОДАНО: setupLessonMaterials / setupLessonPractice =====
-            function setupDynamicList(addButtonSelector, containerSelector, namePlaceholder, urlPlaceholder, labelPrefix) {
-                 // Знаходимо кнопки та контейнери відносно батьківського блоку уроку
-                 document.querySelectorAll('.accordion-content').forEach(moduleContent => {
-                     const lessonBlocks = moduleContent.querySelectorAll('.bg-\\[\\#f7fafc\\]'); // Знаходимо блоки уроків
-                     lessonBlocks.forEach(lessonBlock => {
-                         const addBtn = lessonBlock.querySelector(addButtonSelector);
-                         const container = lessonBlock.querySelector(containerSelector);
+            // ===== ДОДАНО: setupLessonTabbedList (для табів Materials/Practice в уроках) =====
+            function initLessonTabbedList(lessonBlock, addButtonSelector, containerSelector, namePlaceholder, urlPlaceholder, labelPrefix) {
+                 const addBtn = lessonBlock.querySelector(addButtonSelector);
+                 const container = lessonBlock.querySelector(containerSelector);
 
-                         if (!addBtn || !container) {
-                             // console.warn(`Could not find elements for: ${addButtonSelector} or ${containerSelector} in a lesson block`);
-                             return; // Пропускаємо, якщо не знайдено
-                         }
+                 if (!addBtn || !container) {
+                     // console.warn(`Could not find elements for: ${addButtonSelector} or ${containerSelector} in a lesson block`);
+                     return; // Пропускаємо, якщо не знайдено
+                 }
 
-                        function createRow() {
-                            const rowWrapper = document.createElement('div');
-                            rowWrapper.className = 'p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700 space-y-2 relative';
-                            rowWrapper.innerHTML = `
-                                <button type="button" class="btn-icon-sm delete-dynamic-row-btn absolute top-2 right-2">
-                                    <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
-                                </button>
-                                <div>
-                                   <label class="form-label text-xs">${labelPrefix} Name</label>
-                                   <input type="text" class="form-input text-sm !py-2" placeholder="${namePlaceholder}">
-                                </div>
-                                <div>
-                                   <label class="form-label text-xs">${labelPrefix} URL</label>
-                                   <input type="text" class="form-input text-sm !py-2" placeholder="${urlPlaceholder}">
-                                </div>
-                            `;
-                            rowWrapper.querySelector('.delete-dynamic-row-btn').addEventListener('click', () => {
-                                rowWrapper.remove();
-                            });
-                            return rowWrapper;
-                        }
+                function createRow() {
+                    const rowWrapper = document.createElement('div');
+                    // Змінено фон для кращого контрасту всередині таба
+                    rowWrapper.className = 'p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700 space-y-2 relative';
+                    rowWrapper.innerHTML = `
+                        <button type="button" class="btn-icon-sm delete-dynamic-row-btn absolute top-2 right-2">
+                            <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                        </button>
+                        <div>
+                           <label class="form-label text-xs">${labelPrefix} Name</label>
+                           <input type="text" class="form-input text-sm !py-2" placeholder="${namePlaceholder}">
+                        </div>
+                        <div>
+                           <label class="form-label text-xs">${labelPrefix} URL</label>
+                           <input type="text" class="form-input text-sm !py-2" placeholder="${urlPlaceholder}">
+                        </div>
+                    `;
+                    rowWrapper.querySelector('.delete-dynamic-row-btn').addEventListener('click', () => {
+                        rowWrapper.remove();
+                    });
+                    return rowWrapper;
+                }
 
-                        addBtn.addEventListener('click', () => {
-                            container.appendChild(createRow());
-                            lucide.createIcons();
-                        });
-                     });
-                 });
+                addBtn.addEventListener('click', () => {
+                    container.appendChild(createRow());
+                    lucide.createIcons();
+                });
             }
-
-            setupDynamicList('.add-lesson-material-btn', '.lesson-materials-container', 'e.g., Presentation.pdf', 'Paste URL...', 'Material');
-            setupDynamicList('.add-lesson-practice-btn', '.lesson-practice-container', 'e.g., Figma Exercise', 'Paste URL...', 'Practice');
             // ===== END ЗМІНИ =====
 
 
@@ -1315,11 +1507,50 @@
             })();
 
 
+            // --- ДОДАНО: Ініціалізація табів уроку ---
+            function initLessonTabs(lessonBlock) {
+                const tabButtons = lessonBlock.querySelectorAll('.lesson-tab-btn');
+                const tabPanels = lessonBlock.querySelectorAll('.lesson-tab-panel');
+
+                if (tabButtons.length === 0 || tabPanels.length === 0) return;
+
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const tabId = button.dataset.tab;
+                        
+                        // Оновлення кнопок
+                        tabButtons.forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+
+                        // Оновлення панелей
+                        tabPanels.forEach(panel => {
+                            if (panel.id === `lesson-tab-${tabId}`) {
+                                panel.classList.remove('hidden');
+                            } else {
+                                panel.classList.add('hidden');
+                            }
+                        });
+                        
+                        // Re-initialize icons if they are inside the tab
+                        lucide.createIcons();
+                    });
+                });
+            }
+
+
             // --- CONTENT TYPE & EDITOR LOGIC ---
             // Ініціалізація для кожного блоку уроку
              document.querySelectorAll('.accordion-content').forEach(moduleContent => {
                  const lessonBlocks = moduleContent.querySelectorAll('.bg-\\[\\#f7fafc\\]');
                  lessonBlocks.forEach(lessonBlock => {
+                     
+                     // == Ініціалізація нових функцій для уроку ==
+                     initLessonTabs(lessonBlock);
+                     initLessonSkillsInput(lessonBlock);
+                     initLessonTabbedList(lessonBlock, '.add-lesson-material-btn', '.lesson-materials-container', 'e.g., Presentation.pdf', 'Paste URL...', 'Material');
+                     initLessonTabbedList(lessonBlock, '.add-lesson-practice-btn', '.lesson-practice-container', 'e.g., Figma Exercise', 'Paste URL...', 'Practice');
+                     // == END ==
+
                      const contentTypeWrapper = lessonBlock.querySelector('#content-type-wrapper'); // Використовуємо ID, якщо він унікальний В МЕЖАХ УРОКУ
                      if (contentTypeWrapper) {
                         const contentTypeSelector = contentTypeWrapper.querySelector('#content-type-selector');
@@ -1363,6 +1594,14 @@
                             });
                         }
                      }
+                     
+                     // == Ініціалізація тесту уроку ==
+                     const lessonTestContainer = lessonBlock.querySelector('.lesson-test-container');
+                     if (lessonTestContainer) {
+                         initTestEditor(lessonTestContainer);
+                     }
+                     // == END ==
+
                  });
              });
 
@@ -1544,7 +1783,8 @@
             // --- TEST EDITOR LOGIC (винесено в окрему функцію) ---
             function initTestEditor(testEditorContainer) {
                 if (!testEditorContainer) return;
-                const testEditor = testEditorContainer.querySelector('#test-editor'); // Знаходимо сам редактор всередині
+                // Шукаємо редактор всередині (він може мати ID #test-editor або #test-editor-l1-1)
+                const testEditor = testEditorContainer.querySelector('[id^="test-editor"]'); 
                 if (!testEditor) return;
 
                 const questionsContainer = testEditor.querySelector('.test-questions-container');
@@ -1553,8 +1793,11 @@
 
                  // ---- Внутрішні функції initTestEditor ----
                  function getAnswerMarkerHTML(type, questionIndex, answerIndex) {
-                    const name = `correct_answer_q${questionIndex}_m${testEditorContainer.dataset.moduleId || 1}`; // Унікальне ім'я для модуля
-                    const id = `q${questionIndex}_ans_${answerIndex}_m${testEditorContainer.dataset.moduleId || 1}`;
+                    // ===== ОНОВЛЕНО: Використання data-moduleId або data-lessonId =====
+                    const idBase = testEditorContainer.dataset.moduleId ? `m${testEditorContainer.dataset.moduleId}` : (testEditorContainer.dataset.lessonId || 'l_unknown');
+                    const name = `correct_answer_q${questionIndex}_${idBase}`;
+                    const id = `q${questionIndex}_ans_${answerIndex}_${idBase}`;
+                    // ===== END ОНОВЛЕННЯ =====
                     const value = `ans_${answerIndex}`;
 
                     if (type === 'single' || type === 'truefalse') {
@@ -1590,13 +1833,18 @@
                         input.placeholder = `Answer option ${index + 1}`;
                     }
                     });
+                    
+                    // ===== ОНОВЛЕНО: Використання data-moduleId або data-lessonId =====
+                    const testContainer = answersContainer.closest('.lesson-test-container, .module-test-container');
+                    if (!testContainer) return;
+                    const idBase = testContainer.dataset.moduleId ? `m${testContainer.dataset.moduleId}` : (testContainer.dataset.lessonId || 'l_unknown');
+                    // ===== END ОНОВЛЕННЯ =====
+                    
                     answersContainer.querySelectorAll('.answer-row .answer-marker').forEach((marker, index) => {
                         const nameMatch = marker.name.match(/q(\d+)/);
-                        const moduleMatch = marker.name.match(/m(\d+)/); // Отримуємо індекс модуля
-                        if (nameMatch && nameMatch[1] && moduleMatch && moduleMatch[1]) {
+                        if (nameMatch && nameMatch[1]) {
                             const qIndex = nameMatch[1];
-                            const mIndex = moduleMatch[1];
-                            marker.id = `q${qIndex}_ans_${index}_m${mIndex}`;
+                            marker.id = `q${qIndex}_ans_${index}_${idBase}`;
                         }
                     });
                 }
@@ -1785,13 +2033,16 @@
                         }
                     });
                     });
-                     // Оновлення імен радіокнопок першого питання
+                     
+                     // ===== ОНОВЛЕНО: Оновлення імен першого питання =====
+                     const idBase = testEditorContainer.dataset.moduleId ? `m${testEditorContainer.dataset.moduleId}` : (testEditorContainer.dataset.lessonId || 'l_unknown');
                      firstQuestionBlock.querySelectorAll('.answer-marker[type="radio"]').forEach(radio => {
-                         radio.name = `correct_answer_q1_m${testEditorContainer.dataset.moduleId || 1}`;
+                         radio.name = `correct_answer_q1_${idBase}`;
                      });
                      firstQuestionBlock.querySelectorAll('.answer-marker').forEach((marker, index) => {
-                         marker.id = `q1_ans_${index}_m${testEditorContainer.dataset.moduleId || 1}`;
+                         marker.id = `q1_ans_${index}_${idBase}`;
                      });
+                     // ===== END ОНОВЛЕННЯ =====
                 }
              } // End initTestEditor
 
@@ -1803,8 +2054,7 @@
                 if (addTestBtn && testContainer) {
                     // Додаємо індекс модуля для унікальності
                     testContainer.dataset.moduleId = index + 1;
-                    // TODO: Потрібно буде оновити ID та name всередині клонованого #test-editor, щоб вони були унікальними для модуля
-
+                    
                     addTestBtn.addEventListener('click', (e) => {
                         e.stopPropagation(); // Зупиняємо спливання, щоб не закрити акордеон
                         testContainer.classList.remove('hidden');
