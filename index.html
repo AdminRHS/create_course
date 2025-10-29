@@ -354,33 +354,45 @@
             --tw-ring-offset-color: #2d3748;
          }
 
-        /* ДОДАНО: Стилі для табів уроку */
+        /* === ОНОВЛЕНО: Стилі для табів уроку (Pill Style) === */
         .lesson-tab-btn {
-            padding: 8px 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center; /* <<< ДОДАНО */
+            gap: 6px;
+            padding: 6px 16px;
             font-weight: 500;
             color: var(--color-text-secondary);
-            border-bottom: 2px solid transparent;
+            border-bottom: none; /* Removed border */
+            border-radius: 9999px; /* Added */
             transition: all 0.2s ease;
             cursor: pointer;
         }
-        .lesson-tab-btn:hover {
+        
+        .lesson-tab-btn:hover:not(.active) { /* Added :not(.active) */
             color: var(--color-text-primary);
+            background-color: rgba(0,0,0,0.04); /* Added */
         }
-        .dark .lesson-tab-btn:hover {
+        .dark .lesson-tab-btn:hover:not(.active) { /* Added :not(.active) */
             color: #e2e8f0;
+            background-color: rgba(255,255,255,0.08); /* Added */
         }
+        
         .lesson-tab-btn.active {
-            color: var(--color-primary-main);
-            border-bottom-color: var(--color-primary-main);
+            color: var(--color-contrast-text); /* Changed */
+            background-color: var(--color-primary-main); /* Added */
+            border-bottom-color: transparent; /* Changed */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06); /* Added */
         }
         .dark .lesson-tab-btn.active {
-             color: var(--color-primary-light);
-             border-bottom-color: var(--color-primary-light);
+             color: var(--color-contrast-text); /* Changed */
+             background-color: var(--color-primary-main); /* Added */
+             border-bottom-color: transparent; /* Changed */
         }
         .lesson-tab-panel {
-            padding-top: 1.5rem; /* 24px */
+            padding-top: 1rem; /* 16px */ /* Reduced padding-top */
         }
-        /* --- */
+        /* --- END ОНОВЛЕННЯ --- */
 
 
     </style>
@@ -797,23 +809,23 @@
                                                     
                                                     <div class="col-span-10 mt-4">
                                                         <div class="lesson-tabs-wrapper">
-                                                            <div class="border-b border-gray-200 dark:border-gray-700">
-                                                                <nav class="flex -mb-px space-x-4" aria-label="Tabs">
-                                                                    <button type="button" class="lesson-tab-btn active" data-tab="content">
-                                                                        <i data-lucide="layout-dashboard" class="w-4 h-4 inline-block mr-2"></i> Content
+                                                            
+                                                            <div class="mb-4">
+                                                                <nav class="flex w-[70%] p-1 bg-gray-100 dark:bg-gray-800 rounded-full space-x-1" aria-label="Tabs">
+                                                                    <button type="button" class="lesson-tab-btn flex-1 active" data-tab="content">
+                                                                        <i data-lucide="layout-dashboard" class="w-4 h-4 inline-block"></i> <span>Content</span>
                                                                     </button>
-                                                                    <button type="button" class="lesson-tab-btn" data-tab="materials">
-                                                                        <i data-lucide="paperclip" class="w-4 h-4 inline-block mr-2"></i> Materials
+                                                                    <button type="button" class="lesson-tab-btn flex-1" data-tab="materials">
+                                                                        <i data-lucide="paperclip" class="w-4 h-4 inline-block"></i> <span>Materials</span>
                                                                     </button>
-                                                                    <button type="button" class="lesson-tab-btn" data-tab="practice">
-                                                                        <i data-lucide="file-code-2" class="w-4 h-4 inline-block mr-2"></i> Practice
+                                                                    <button type="button" class="lesson-tab-btn flex-1" data-tab="practice">
+                                                                        <i data-lucide="file-code-2" class="w-4 h-4 inline-block"></i> <span>Practice</span>
                                                                     </button>
-                                                                    <button type="button" class="lesson-tab-btn" data-tab="test">
-                                                                        <i data-lucide="clipboard-check" class="w-4 h-4 inline-block mr-2"></i> Test
+                                                                    <button type="button" class="lesson-tab-btn flex-1" data-tab="test">
+                                                                        <i data-lucide="clipboard-check" class="w-4 h-4 inline-block"></i> <span>Test</span>
                                                                     </button>
                                                                 </nav>
                                                             </div>
-                                                            
                                                             <div class="lesson-tab-panels">
                                                                 <div class="lesson-tab-panel" id="lesson-tab-content">
                                                                     <div id="content-type-wrapper">
@@ -2015,7 +2027,7 @@
                     btn.addEventListener('click', (e) => {
                         const answerRow = e.target.closest('.answer-row');
                         if (answerRow) {
-                            const container = answerRow.closest('.test-answers-container');
+                            const container = answerRow.closest('.answer-row');
                             answerRow.remove();
                             renumberPlaceholders(container);
                         }
@@ -2048,7 +2060,7 @@
                     btn.addEventListener('click', (e) => {
                         const answerRow = e.target.closest('.answer-row');
                         if (answerRow) {
-                            const container = answerRow.closest('.test-answers-container');
+                            const container = answerRow.closest('.answer-row');
                             answerRow.remove();
                             renumberPlaceholders(container);
                         }
